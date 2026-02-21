@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'Views/HomeScreen/View/home_view.dart';
 import 'Views/LoginViews/Views/LoginScreen.dart';
 import 'Views/LoginViews/Views/SignupScreen.dart';
 
 
 void main() {
-  runApp(const MyApp());
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -25,6 +27,7 @@ class MyApp extends StatelessWidget {
       routes: {
         LoginScreen.id: (context) => const LoginScreen(),
         SignupScreen.id: (context) => const SignupScreen(),
+        HomePage.id: (context) => const HomePage(),
 
       },
     );

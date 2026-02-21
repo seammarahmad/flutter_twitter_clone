@@ -1,11 +1,52 @@
+import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
+
+import '../core/provider.dart';
+
+final authApiProvider=Provider((ref){
+  final account=ref.watch(appwriteAccountProvider);
+  return Auth(account: account);
+});
+
 abstract class Authapi {
-  void signup();
+  Future<Either<String, User>> signup({
+    required String email,
+    required String password,
+  });
+  Future<Either<String, Session>> login({
+    required String email,
+    required String password,
+  });
 }
 
+class Auth extends Authapi {
+  final Account _account;
 
-class Auth extends Authapi{
+  Auth({required Account account}) : _account = account;
+
   @override
-  void signup() {
-    // TODO: implement signup
+  Future<Either<String, User>> signup({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final account= await _account.create(userId: ID.unique(), email: email, password: password);
+      return right(account);
+    } catch (e) {
+      print('error in auth' +e.toString());
+      return left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, Session>> login({required String email, required String password}) async{
+    try{
+      final user=await _account.createEmailPasswordSession(email: email, password: password);
+      return right(user);
+    }catch(e){
+      return left("Error in Login : "+e.toString());
+    }
   }
 }

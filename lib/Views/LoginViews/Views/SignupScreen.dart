@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
+import '../../../core/utils.dart';
 import '../constants/constants.dart';
 import 'LoginScreen.dart';
 
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends ConsumerStatefulWidget {
   static String id='signup_screen';
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
+
+
+  final emailController=TextEditingController();
+  final passwordController=TextEditingController();
 
   String? email;
   String? password;
+
+  void onSignUp(){
+    if(validateForm(email!, password!)){
+     final res=ref.read(authControllerprovider.notifier).signUp(email: emailController.text, password: passwordController.text, context: context);
+    }
+  }
 
   bool validateForm(String email, String password) {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
@@ -31,8 +44,18 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+
+    final isLoading=ref.watch(authControllerprovider);
+
+    return isLoading? const LoadingPage(): Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -57,6 +80,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 textAlign: TextAlign.center),
             const SizedBox(height: 10.0),
             TextField(
+              controller: emailController,
                 keyboardType: TextInputType.emailAddress,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
@@ -68,6 +92,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     hintTexts: 'Enter Your Email')),
             const SizedBox(height: 8.0),
             TextField(
+              controller: passwordController,
                 obscureText: true,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
@@ -82,7 +107,7 @@ class _SignupScreenState extends State<SignupScreen> {
               title: 'Sign Up',
               colour: Colors.lightBlueAccent,
               onPress: () async {
-
+                onSignUp();
               },
             ),
             const SizedBox(
