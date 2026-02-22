@@ -1,26 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_twitter_clone/theme/app_theme.dart';
 
 import 'Views/HomeScreen/View/home_view.dart';
 import 'Views/LoginViews/Views/LoginScreen.dart';
 import 'Views/LoginViews/Views/SignupScreen.dart';
+import 'Views/LoginViews/controller/auth_controller.dart';
+import 'core/utils.dart';
 
 
 void main() {
   runApp(ProviderScope(child: const MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return MaterialApp(
-      title: 'Twitter Clone Flutter',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      debugShowCheckedModeBanner: false,
+        title: 'Flutter Clone',
+        theme: AppTheme.theme,
+        home: ref.watch(currentUserAccountProvider).when(
+            data: (user){
+              print(user!.email);
+              if(user!=null){
+                return const HomePage();
+              }
+            }, error: (error, stackTrace) => ErrorPage(Error: error.toString()), loading: ()=>const LoadingPage()),
 
       initialRoute: LoginScreen.id,
 
@@ -28,7 +35,6 @@ class MyApp extends StatelessWidget {
         LoginScreen.id: (context) => const LoginScreen(),
         SignupScreen.id: (context) => const SignupScreen(),
         HomePage.id: (context) => const HomePage(),
-
       },
     );
   }

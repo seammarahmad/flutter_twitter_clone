@@ -1,6 +1,7 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_twitter_clone/core/utils.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../core/provider.dart';
@@ -19,12 +20,16 @@ abstract class Authapi {
     required String email,
     required String password,
   });
+
+  Future<User?> currentUserAccount();
 }
 
 class Auth extends Authapi {
   final Account _account;
 
   Auth({required Account account}) : _account = account;
+
+
 
   @override
   Future<Either<String, User>> signup({
@@ -47,6 +52,16 @@ class Auth extends Authapi {
       return right(user);
     }catch(e){
       return left("Error in Login : "+e.toString());
+    }
+  }
+
+  @override
+  Future<User?> currentUserAccount() async{
+    try{
+      return await _account.get();
+    }catch(e){
+      return null;
+      print(e.toString());
     }
   }
 }
