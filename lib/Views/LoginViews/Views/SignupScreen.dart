@@ -108,7 +108,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               colour: Colors.lightBlueAccent,
               onPress: () async {
                 onSignUp();
-              },
+              }, Size: 200.0,
             ),
             const SizedBox(
               height: 20.0,

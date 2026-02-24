@@ -40,8 +40,9 @@ InputDecoration kTextFieldDesign({required Color borderColor, required String hi
 
 class RoundButton extends StatelessWidget {
 
-  const RoundButton({super.key, required this.colour, required this.title, required this.onPress});
+  const RoundButton({super.key, required this.colour, required this.title, required this.onPress,required this.Size});
 
+  final double Size;
   final Color colour;
   final String title;
   final VoidCallback onPress;
@@ -58,7 +59,7 @@ class RoundButton extends StatelessWidget {
 
         child: MaterialButton(
           onPressed:onPress,
-          minWidth: 200.0,
+          minWidth: this.Size,
           height: 42.0,
           child: Text(title, style: kTextStyle.copyWith(color: Colors.white)),
         ),

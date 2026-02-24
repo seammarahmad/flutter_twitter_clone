@@ -124,7 +124,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     colour: Colors.lightBlueAccent,
                     onPress: () async {
                       Login();
-                    },
+                    }, Size: 200.0,
                   ),
                   const SizedBox(height: 20.0),
                   Row(

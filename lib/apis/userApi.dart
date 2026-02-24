@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_twitter_clone/config/environment.dart';
 import 'package:fpdart/fpdart.dart';
@@ -13,6 +14,7 @@ final userApiProvider = Provider((ref) {
 
 abstract class AUserApi {
   Future<Either<String, void>> saveUserData({required UserModel userModel});
+  Future<Document> getUserData(String uid);
 }
 
 class UserApi extends AUserApi {
@@ -37,5 +39,11 @@ class UserApi extends AUserApi {
       print('error in user api' + e.toString());
       return left(e.toString());
     }
+  }
+
+  @override
+  Future<Document> getUserData(String uid) {
+    // TODO: implement getUserData
+    throw UnimplementedError();
   }
 }

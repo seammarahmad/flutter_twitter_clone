@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_twitter_clone/Views/tweet/view/create_tweet_view.dart';
 import 'package:flutter_twitter_clone/theme/app_theme.dart';
 
 import 'Views/HomeScreen/View/home_view.dart';
@@ -26,15 +27,17 @@ class MyApp extends ConsumerWidget {
               print(user!.email);
               if(user!=null){
                 return const HomePage();
+              }else{
+                return const LoginScreen();
               }
             }, error: (error, stackTrace) => ErrorPage(Error: error.toString()), loading: ()=>const LoadingPage()),
 
-      initialRoute: LoginScreen.id,
 
       routes: {
         LoginScreen.id: (context) => const LoginScreen(),
         SignupScreen.id: (context) => const SignupScreen(),
         HomePage.id: (context) => const HomePage(),
+        CreateTweetView.id:(context)=>const CreateTweetView(),
       },
     );
   }
