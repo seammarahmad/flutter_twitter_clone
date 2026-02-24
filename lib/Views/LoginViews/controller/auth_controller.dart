@@ -9,18 +9,35 @@ import 'package:flutter_twitter_clone/core/utils.dart';
 import 'package:flutter_twitter_clone/model/usermodel.dart';
 import 'package:riverpod/src/framework.dart';
 
-final authControllerprovider = StateNotifierProvider<AuthController, bool>((
-  ref,
-) {
-  return AuthController(
-    authapi: ref.watch(authApiProvider),
-    userApi: ref.watch(userApiProvider),
-  );
+
+///Auth Provider
+final currentUserdetailsProvider = FutureProvider((ref) {
+
+  final currentuserid=ref.watch(currentUserAccountProvider).value!.$id;
+  final userDetails=ref.watch(userDetailsProvider(currentuserid));
+  return userDetails.value;
 });
+
 
 final currentUserAccountProvider = FutureProvider((ref) {
   final account = ref.watch(authControllerprovider.notifier);
   return account.currentUserAccount();
+});
+
+final userDetailsProvider = FutureProvider.family((ref, String uid) async {
+  final account = ref.watch(authControllerprovider.notifier);
+  account.getUserData(uid);
+});
+
+
+///Auth Controller Start From Here
+final authControllerprovider = StateNotifierProvider<AuthController, bool>((
+    ref,
+    ) {
+  return AuthController(
+    authapi: ref.watch(authApiProvider),
+    userApi: ref.watch(userApiProvider),
+  );
 });
 
 class AuthController extends StateNotifier<bool> {
@@ -48,7 +65,7 @@ class AuthController extends StateNotifier<bool> {
           following: [],
           profilePic: '',
           bannerPic: '',
-          uid: '',
+          uid: r.$id,
           bio: '',
           isTwitterBlue: false,
         );
@@ -87,5 +104,10 @@ class AuthController extends StateNotifier<bool> {
 
   Future<User?> currentUserAccount() async {
     return _authapi.currentUserAccount();
+  }
+
+  Future<UserModel> getUserData(String uid) async {
+    final document = await _userApi.getUserData(uid);
+    return UserModel.fromMap(document.data);
   }
 }

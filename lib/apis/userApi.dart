@@ -30,7 +30,7 @@ class UserApi extends AUserApi {
       await _db.createDocument(
         databaseId: Environment.appwriteDatabaseID,
         collectionId: Environment.collectionId,
-        documentId: ID.unique(),
+        documentId: userModel.uid,
         data: userModel.toMap(),
       );
 
@@ -43,7 +43,7 @@ class UserApi extends AUserApi {
 
   @override
   Future<Document> getUserData(String uid) {
-    // TODO: implement getUserData
-    throw UnimplementedError();
+    return _db.getDocument(databaseId: Environment.appwriteDatabaseID, collectionId: Environment.collectionId, documentId: uid);
+
   }
 }
