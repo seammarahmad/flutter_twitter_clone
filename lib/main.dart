@@ -18,26 +18,23 @@ class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-        title: 'Flutter Clone',
-        theme: AppTheme.theme,
-        home: ref.watch(currentUserAccountProvider).when(
-            data: (user){
-              print(user!.email);
-              if(user!=null){
-                return const HomePage();
-              }else{
-                return const LoginScreen();
-              }
-            }, error: (error, stackTrace) => ErrorPage(Error: error.toString()), loading: ()=>const LoadingPage()),
-
-
+      title: 'Flutter Clone',
+      theme: AppTheme.theme,
+      home: ref.watch(currentUserAccountProvider).when(
+        data: (user) => user != null
+            ? const HomePage()
+            : const LoginScreen(),
+        error: (error, stackTrace) =>
+            ErrorPage(Error: error.toString()),
+        loading: () => const LoadingPage(),
+      ),
       routes: {
         LoginScreen.id: (context) => const LoginScreen(),
         SignupScreen.id: (context) => const SignupScreen(),
         HomePage.id: (context) => const HomePage(),
-        CreateTweetView.id:(context)=>const CreateTweetView(),
+        CreateTweetView.id: (context) => const CreateTweetView(),
       },
     );
   }
