@@ -35,27 +35,31 @@ class _CreateTweetViewState extends ConsumerState<CreateTweetView> {
 
         ),
         body: currentUser.when(
-        data: (currentUser)
-    {
+          data: (user) {
+            user = user as UserModel;
+            if (user == null) {
+              return const Center(
+                child: Text('User data not found'),
+              );
+            }
 
-      final user = currentUser as UserModel;
-      return SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(user!.profilePic),
-                    radius: 30,
-                  ),
-                ],
+            return SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(user.profilePic),
+                          radius: 30,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      );
-    },
+            );
+          },
     loading: () => const Center(
     child: CircularProgressIndicator(),
     ),
