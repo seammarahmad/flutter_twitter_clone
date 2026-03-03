@@ -9,31 +9,41 @@ import 'package:flutter_twitter_clone/core/utils.dart';
 import 'package:flutter_twitter_clone/model/usermodel.dart';
 import 'package:riverpod/src/framework.dart';
 
-
 ///Auth Provider
-final currentUserdetailsProvider = FutureProvider((ref) {
+final currentUserdetailsProvider =
+FutureProvider<UserModel?>((ref) async {
 
-  final currentuserid=ref.watch(currentUserAccountProvider).value!.$id;
-  final userDetails=ref.watch(userDetailsProvider(currentuserid));
-  return userDetails.value;
+  final controller =
+  ref.read(authControllerprovider.notifier);
+
+  final account = await controller.currentUserAccount();
+
+  if (account == null) {
+    print("No logged in user");
+    return null;
+  }
+
+  print("Fetching Data for the user + ${account.$id}");
+
+  final user = await controller.getUserData(account.$id);
+
+  return user;
 });
 
-
-final currentUserAccountProvider = FutureProvider((ref) {
+final currentUserAccountProvider = FutureProvider<User?>((ref) async {
   final account = ref.watch(authControllerprovider.notifier);
   return account.currentUserAccount();
 });
 
 final userDetailsProvider = FutureProvider.family((ref, String uid) async {
   final account = ref.watch(authControllerprovider.notifier);
-  account.getUserData(uid);
+  return account.getUserData(uid);
 });
-
 
 ///Auth Controller Start From Here
 final authControllerprovider = StateNotifierProvider<AuthController, bool>((
-    ref,
-    ) {
+  ref,
+) {
   return AuthController(
     authapi: ref.watch(authApiProvider),
     userApi: ref.watch(userApiProvider),
@@ -103,10 +113,13 @@ class AuthController extends StateNotifier<bool> {
   }
 
   Future<User?> currentUserAccount() async {
-    return _authapi.currentUserAccount();
+    final user =_authapi.currentUserAccount();
+    print("Current User : $user");
+    return user;
   }
 
   Future<UserModel> getUserData(String uid) async {
+    print('Fetching Data for the user + $uid');
     final document = await _userApi.getUserData(uid);
     return UserModel.fromMap(document.data);
   }
