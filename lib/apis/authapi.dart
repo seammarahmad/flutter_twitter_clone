@@ -1,13 +1,12 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_twitter_clone/core/utils.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../core/provider.dart';
 
-final authApiProvider=Provider((ref){
-  final account=ref.watch(appwriteAccountProvider);
+final authApiProvider = Provider((ref) {
+  final account = ref.watch(appwriteAccountProvider);
   return Auth(account: account);
 });
 
@@ -22,6 +21,7 @@ abstract class Authapi {
   });
 
   Future<User?> currentUserAccount();
+  Future<Either<String, void>> logout();
 }
 
 class Auth extends Authapi {
@@ -29,39 +29,48 @@ class Auth extends Authapi {
 
   Auth({required Account account}) : _account = account;
 
-
-
   @override
   Future<Either<String, User>> signup({
     required String email,
     required String password,
   }) async {
     try {
-      final account= await _account.create(userId: ID.unique(), email: email, password: password);
+      final account = await _account.create(
+          userId: ID.unique(), email: email, password: password);
       return right(account);
     } catch (e) {
-      print('error in auth' +e.toString());
       return left(e.toString());
     }
   }
 
   @override
-  Future<Either<String, Session>> login({required String email, required String password}) async{
-    try{
-      final user=await _account.createEmailPasswordSession(email: email, password: password);
-      return right(user);
-    }catch(e){
-      return left("Error in Login : "+e.toString());
+  Future<Either<String, Session>> login(
+      {required String email, required String password}) async {
+    try {
+      final session = await _account.createEmailPasswordSession(
+          email: email, password: password);
+      return right(session);
+    } catch (e) {
+      return left("Error in Login: " + e.toString());
     }
   }
 
   @override
-  Future<User?> currentUserAccount() async{
-    try{
+  Future<User?> currentUserAccount() async {
+    try {
       return await _account.get();
-    }catch(e){
+    } catch (e) {
       return null;
-      print(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, void>> logout() async {
+    try {
+      await _account.deleteSession(sessionId: 'current');
+      return right(null);
+    } catch (e) {
+      return left(e.toString());
     }
   }
 }
