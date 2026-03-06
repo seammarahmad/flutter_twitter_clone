@@ -5,6 +5,8 @@ import 'package:flutter_twitter_clone/Views/LoginViews/constants/constants.dart'
 import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
 import 'package:flutter_twitter_clone/theme/pallete.dart';
 
+import '../../../core/utils.dart';
+
 class CreateTweetView extends ConsumerStatefulWidget {
   static String id = 'create_tweet_view';
 
@@ -136,12 +138,7 @@ class _CreateTweetViewState extends ConsumerState<CreateTweetView> {
         padding: EdgeInsets.only(bottom: 15.0),
 
         decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: Pallete.greyColor,
-              width: 2.0,
-            ),
-          )
+          border: Border(top: BorderSide(color: Pallete.greyColor, width: 2.0)),
         ),
 
         child: Row(
@@ -151,7 +148,12 @@ class _CreateTweetViewState extends ConsumerState<CreateTweetView> {
                 8.0,
               ).copyWith(left: 15.0, right: 15.0),
 
-              child: SvgPicture.asset('assets/svgs/gallery.svg'),
+              child: GestureDetector(
+                onTap: () {
+                  pickImages();
+                },
+                child: SvgPicture.asset('assets/svgs/gallery.svg'),
+              ),
             ),
 
             Padding(
@@ -169,7 +171,6 @@ class _CreateTweetViewState extends ConsumerState<CreateTweetView> {
 
               child: SvgPicture.asset('assets/svgs/emoji.svg'),
             ),
-
           ],
         ),
       ),
