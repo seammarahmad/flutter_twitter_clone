@@ -41,6 +41,8 @@ dependencies:
   path_provider: ^2.1.5
   image_picker: ^1.2.1
   carousel_slider: ^5.1.2
+  timeago: ^3.7.1
+  any_link_preview: ^3.0.3
 
 dev_dependencies:
   flutter_test:

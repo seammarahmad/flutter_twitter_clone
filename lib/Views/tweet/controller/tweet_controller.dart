@@ -18,16 +18,30 @@ final TweetControllerProvider = StateNotifierProvider<TweetController, bool>((
   return TweetController(tweetAPI: tweetAPI, ref: ref, storageAPI: storageAPI);
 });
 
+final getTweetsProvider = FutureProvider((ref) {
+  final gettweetController = ref.watch(TweetControllerProvider.notifier);
+  return gettweetController.getTweets();
+});
+
 class TweetController extends StateNotifier<bool> {
   final Tweetapi _tweetAPI;
   final StorageAPI _storageAPI;
 
   final Ref _ref;
 
-  TweetController({required Ref ref, required Tweetapi tweetAPI, required StorageAPI storageAPI})
-    : _storageAPI = storageAPI, _tweetAPI = tweetAPI,
-      _ref = ref,
-      super(false);
+  TweetController({
+    required Ref ref,
+    required Tweetapi tweetAPI,
+    required StorageAPI storageAPI,
+  }) : _storageAPI = storageAPI,
+       _tweetAPI = tweetAPI,
+       _ref = ref,
+       super(false);
+
+  Future<List<Tweet>> getTweets() async {
+    final tweeetlist = await _tweetAPI.getTweets();
+    return tweeetlist.map((tweet) => Tweet.fromMap(tweet.data)).toList();
+  }
 
   void shareTweet({
     required List<File> images,
@@ -133,7 +147,8 @@ class TweetController extends StateNotifier<bool> {
       if (word.startsWith('https://') ||
           word.startsWith('www.') ||
           word.startsWith('http://')) {
-        link = word;
+
+        link = word.replaceFirst(RegExp(r'^https?:\/\/'), '');
       }
     }
 

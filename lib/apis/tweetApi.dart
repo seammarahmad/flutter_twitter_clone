@@ -6,14 +6,14 @@ import 'package:flutter_twitter_clone/core/provider.dart';
 import 'package:flutter_twitter_clone/model/tweet_model.dart';
 import 'package:fpdart/fpdart.dart';
 
-
-final TweetApiProvider=Provider((ref){
+final TweetApiProvider = Provider((ref) {
   return Tweetapi(db: ref.watch(appWriteDatabaseProvider));
 });
 
-
 abstract class TweetapiInterface {
   Future<Either<String, Document>> shareTweet(Tweet tweet);
+
+  Future<List<Document>> getTweets();
 }
 
 class Tweetapi implements TweetapiInterface {
@@ -36,5 +36,14 @@ class Tweetapi implements TweetapiInterface {
       print('error in Tweet api : ' + e.toString());
       return left(e.toString());
     }
+  }
+
+  @override
+  Future<List<Document>> getTweets() async{
+    final abc =await _db.listDocuments(
+      databaseId: Environment.appwriteDatabaseID,
+      collectionId: Environment.appwriteTweetcollectionId,
+    );
+    return abc.documents;
   }
 }
