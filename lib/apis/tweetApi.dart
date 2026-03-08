@@ -21,6 +21,8 @@ abstract class TweetapiInterface {
   Stream<RealtimeMessage> getLatestTweet();
 
   Future<Either<String, Document>> likeTweet(Tweet tweet);
+
+  Future<Either<String, Document>> updateresharecountTweet(Tweet tweet);
 }
 
 class Tweetapi implements TweetapiInterface {
@@ -73,6 +75,24 @@ class Tweetapi implements TweetapiInterface {
         collectionId: Environment.appwriteTweetcollectionId,
         documentId: tweet.id,
         data: {'likes': tweet.likes},
+      );
+      return right(document);
+    } on AppwriteException catch (e, st) {
+      return left(e.message ?? 'Some unexpected error occured');
+    } catch (e, st) {
+      print('error in Tweet api : ' + e.toString());
+      return left('Some unexpected error occured in the likes tweet api');
+    }
+  }
+
+  @override
+  Future<Either<String, Document>> updateresharecountTweet(Tweet tweet) async {
+    try {
+      final document = await _db.updateDocument(
+        databaseId: Environment.appwriteDatabaseID,
+        collectionId: Environment.appwriteTweetcollectionId,
+        documentId: tweet.id,
+        data: {'reshareCount': tweet.reshareCount},
       );
       return right(document);
     } on AppwriteException catch (e, st) {

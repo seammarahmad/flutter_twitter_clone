@@ -52,7 +52,25 @@ class TweetCard extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ///TODO Retweeted
+                                if (tweet.retweetedBy.isNotEmpty)
+                                  Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/svgs/retweet.svg',
+                                        color: Pallete.greyColor,
+                                        height: 20,
+                                      ),
+                                      const SizedBox(width: 2),
+                                      Text(
+                                        '${tweet.retweetedBy} retweeted',
+                                        style: const TextStyle(
+                                          color: Pallete.greyColor,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 Row(
                                   children: [
                                     Container(
@@ -112,7 +130,13 @@ class TweetCard extends ConsumerWidget {
                                     TweetIconbutton(
                                       imgaddress: 'assets/svgs/retweet.svg',
                                       text: tweet.reshareCount.toString(),
-                                      onTap: () {},
+                                      onTap: () {
+                                        ref
+                                            .read(
+                                              TweetControllerProvider.notifier,
+                                            )
+                                            .reshareTweet(tweet, currentUser);
+                                      },
                                     ),
                                     LikeButton(
                                       onTap: (isliked) async {

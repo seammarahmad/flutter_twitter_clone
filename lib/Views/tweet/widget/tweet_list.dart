@@ -24,6 +24,26 @@ class TweetList extends ConsumerWidget {
                       'databases.*.collections.${Environment.appwriteTweetcollectionId}.documents.*.create',
                     )) {
                       tweets.insert(0, Tweet.fromMap(data.payload));
+                    } else if (data.events.contains(
+                      'databases.*.collections.${Environment.appwriteTweetcollectionId}.documents.*.update',
+                    )) {
+                      final startingPoint =
+                      data.events[0].lastIndexOf('rows.');
+                      final endPoint = data.events[0].lastIndexOf('.update');
+                      final tweetId = data.events[0]
+                          .substring(startingPoint + 5, endPoint);
+
+                      print('Tweet if is : '+tweetId);
+
+                      var tweet = tweets
+                          .where((element) => element.id == tweetId)
+                          .first;
+
+                      final tweetIndex = tweets.indexOf(tweet);
+                      tweets.removeWhere((element) => element.id == tweetId);
+
+                      tweet = Tweet.fromMap(data.payload);
+                      tweets.insert(tweetIndex, tweet);
                     }
                     return ListView.builder(
                       itemCount: tweets.length,
@@ -35,7 +55,7 @@ class TweetList extends ConsumerWidget {
                   },
                   error: (error, stackTrace) =>
                       ErrorMessage(error: error.toString()),
-                  loading: (){
+                  loading: () {
                     return ListView.builder(
                       itemCount: tweets.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -45,7 +65,6 @@ class TweetList extends ConsumerWidget {
                     );
                   },
                 );
-
           },
           error: (error, stackTrace) => ErrorMessage(error: error.toString()),
           loading: () => Loader(),

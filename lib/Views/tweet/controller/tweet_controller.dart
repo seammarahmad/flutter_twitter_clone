@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
 import 'package:flutter_twitter_clone/apis/storageapi.dart';
 import 'package:flutter_twitter_clone/apis/tweetApi.dart';
@@ -27,8 +29,8 @@ final getTweetsProvider = FutureProvider((ref) {
   return gettweetController.getTweets();
 });
 
-final getlatestTweetProvider=StreamProvider((ref){
-  final tweetAPI=ref.watch(TweetApiProvider);
+final getlatestTweetProvider = StreamProvider((ref) {
+  final tweetAPI = ref.watch(TweetApiProvider);
   return tweetAPI.getLatestTweet();
 });
 
@@ -63,7 +65,7 @@ class TweetController extends StateNotifier<bool> {
 
     tweet = tweet.copyWith(likes: likes);
     final res = await _tweetAPI.likeTweet(tweet);
-    res.fold((onLeft)=>null, (onRight)=>null);
+    res.fold((onLeft) => null, (onRight) => null);
     // final res = await _tweetAPI.likeTweet(tweet)
     // res.fold((l) => null, (r) {
     //   _notificationController.createNotification(
@@ -73,6 +75,28 @@ class TweetController extends StateNotifier<bool> {
     //     uid: tweet.uid,
     //   );
     // });
+  }
+
+  void reshareTweet(Tweet tweet, UserModel user) async {
+    tweet = tweet.copyWith(reshareCount: tweet.reshareCount + 1);
+    final res = await _tweetAPI.updateresharecountTweet(tweet);
+    res.fold((onLeft) => print('Error in the reshare tweet' + onLeft), (
+      onRight,
+    ) async {
+      tweet = tweet.copyWith(
+        id: ID.unique(),
+        reshareCount: 0,
+        retweetedBy: user.name,
+        likes: [],
+        commentIds: [],
+        tweetedAt: DateTime.now(),
+      );
+      final res2 = await _tweetAPI.shareTweet(tweet);
+      res2.fold(
+        (onLeft) => print('Error in the reshare tweet' + onLeft),
+        (onRight) => null,
+      );
+    });
   }
 
   void shareTweet({
@@ -90,6 +114,8 @@ class TweetController extends StateNotifier<bool> {
       _shareTextTweet(text: text, context: context);
     }
   }
+
+  ///////////////////////////////////////////////////PRVIATE FUNCTIONS////////////////////////////////////
 
   Future<void> _shareImageTweet({
     required List<File> images,
@@ -179,7 +205,6 @@ class TweetController extends StateNotifier<bool> {
       if (word.startsWith('https://') ||
           word.startsWith('www.') ||
           word.startsWith('http://')) {
-
         link = word.replaceFirst(RegExp(r'^https?:\/\/'), '');
       }
     }
