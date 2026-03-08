@@ -7,19 +7,27 @@ import 'package:flutter_twitter_clone/model/tweet_model.dart';
 import 'package:fpdart/fpdart.dart';
 
 final TweetApiProvider = Provider((ref) {
-  return Tweetapi(db: ref.watch(appWriteDatabaseProvider));
+  return Tweetapi(
+    db: ref.watch(appWriteDatabaseProvider),
+    realtime: ref.watch(appWriteRealTimeProvider),
+  );
 });
 
 abstract class TweetapiInterface {
   Future<Either<String, Document>> shareTweet(Tweet tweet);
 
   Future<List<Document>> getTweets();
+
+  Stream<RealtimeMessage> getLatestTweet();
 }
 
 class Tweetapi implements TweetapiInterface {
   final Databases _db;
+  final Realtime _realtime;
 
-  Tweetapi({required Databases db}) : _db = db;
+  Tweetapi({required Databases db, required Realtime realtime})
+    : _realtime = realtime,
+      _db = db;
 
   @override
   Future<Either<String, Document>> shareTweet(Tweet tweet) async {
@@ -39,11 +47,20 @@ class Tweetapi implements TweetapiInterface {
   }
 
   @override
-  Future<List<Document>> getTweets() async{
-    final abc =await _db.listDocuments(
+  Future<List<Document>> getTweets() async {
+    final abc = await _db.listDocuments(
       databaseId: Environment.appwriteDatabaseID,
       collectionId: Environment.appwriteTweetcollectionId,
     );
     return abc.documents;
+  }
+
+  @override
+  Stream<RealtimeMessage> getLatestTweet() {
+
+    return _realtime.subscribe([
+      'databases.${Environment.appwriteDatabaseID}.collections.${Environment.appwriteTweetcollectionId}.documents'
+    ]).stream;
+
   }
 }

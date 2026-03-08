@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
 import 'package:flutter_twitter_clone/apis/storageapi.dart';
@@ -21,6 +23,11 @@ final TweetControllerProvider = StateNotifierProvider<TweetController, bool>((
 final getTweetsProvider = FutureProvider((ref) {
   final gettweetController = ref.watch(TweetControllerProvider.notifier);
   return gettweetController.getTweets();
+});
+
+final getlatestTweetProvider=StreamProvider((ref){
+  final tweetAPI=ref.watch(TweetApiProvider);
+  return tweetAPI.getLatestTweet();
 });
 
 class TweetController extends StateNotifier<bool> {
