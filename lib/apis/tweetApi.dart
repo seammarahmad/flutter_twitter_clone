@@ -19,6 +19,8 @@ abstract class TweetapiInterface {
   Future<List<Document>> getTweets();
 
   Stream<RealtimeMessage> getLatestTweet();
+
+  Future<Either<String, Document>> likeTweet(Tweet tweet);
 }
 
 class Tweetapi implements TweetapiInterface {
@@ -51,16 +53,33 @@ class Tweetapi implements TweetapiInterface {
     final abc = await _db.listDocuments(
       databaseId: Environment.appwriteDatabaseID,
       collectionId: Environment.appwriteTweetcollectionId,
+      queries: [Query.orderDesc('tweetedAt')],
     );
     return abc.documents;
   }
 
   @override
   Stream<RealtimeMessage> getLatestTweet() {
-
     return _realtime.subscribe([
-      'databases.${Environment.appwriteDatabaseID}.collections.${Environment.appwriteTweetcollectionId}.documents'
+      'databases.${Environment.appwriteDatabaseID}.collections.${Environment.appwriteTweetcollectionId}.documents',
     ]).stream;
+  }
 
+  @override
+  Future<Either<String, Document>> likeTweet(Tweet tweet) async {
+    try {
+      final document = await _db.updateDocument(
+        databaseId: Environment.appwriteDatabaseID,
+        collectionId: Environment.appwriteTweetcollectionId,
+        documentId: tweet.id,
+        data: {'likes': tweet.likes},
+      );
+      return right(document);
+    } on AppwriteException catch (e, st) {
+      return left(e.message ?? 'Some unexpected error occured');
+    } catch (e, st) {
+      print('error in Tweet api : ' + e.toString());
+      return left('Some unexpected error occured in the likes tweet api');
+    }
   }
 }

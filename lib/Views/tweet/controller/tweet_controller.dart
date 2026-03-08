@@ -12,6 +12,8 @@ import 'package:flutter_twitter_clone/core/enum/tweet_enum.dart';
 import 'package:flutter_twitter_clone/core/utils.dart';
 import 'package:flutter_twitter_clone/model/tweet_model.dart';
 
+import '../../../model/usermodel.dart';
+
 final TweetControllerProvider = StateNotifierProvider<TweetController, bool>((
   ref,
 ) {
@@ -48,6 +50,29 @@ class TweetController extends StateNotifier<bool> {
   Future<List<Tweet>> getTweets() async {
     final tweeetlist = await _tweetAPI.getTweets();
     return tweeetlist.map((tweet) => Tweet.fromMap(tweet.data)).toList();
+  }
+
+  void likeTweet(Tweet tweet, UserModel user) async {
+    List<String> likes = tweet.likes;
+
+    if (tweet.likes.contains(user.uid)) {
+      likes.remove(user.uid);
+    } else {
+      likes.add(user.uid);
+    }
+
+    tweet = tweet.copyWith(likes: likes);
+    final res = await _tweetAPI.likeTweet(tweet);
+    res.fold((onLeft)=>null, (onRight)=>null);
+    // final res = await _tweetAPI.likeTweet(tweet)
+    // res.fold((l) => null, (r) {
+    //   _notificationController.createNotification(
+    //     text: '${user.name} liked your tweet!',
+    //     postId: tweet.id,
+    //     notificationType: NotificationType.like,
+    //     uid: tweet.uid,
+    //   );
+    // });
   }
 
   void shareTweet({
