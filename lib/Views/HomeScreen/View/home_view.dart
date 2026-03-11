@@ -52,7 +52,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         index: _page,
         children: UIConstants.bottomTabBarPages,
       ),
-      
+
       floatingActionButton: FloatingActionButton(child: const Icon(Icons.add), onPressed: (){
         Navigator.pushNamed(context, CreateTweetView.id);
       },),

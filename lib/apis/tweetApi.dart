@@ -23,6 +23,8 @@ abstract class TweetapiInterface {
   Future<Either<String, Document>> likeTweet(Tweet tweet);
 
   Future<Either<String, Document>> updateresharecountTweet(Tweet tweet);
+
+  Future<List<Document>> getRepliesToTweets(Tweet tweet);
 }
 
 class Tweetapi implements TweetapiInterface {
@@ -101,5 +103,65 @@ class Tweetapi implements TweetapiInterface {
       print('error in Tweet api : ' + e.toString());
       return left('Some unexpected error occured in the likes tweet api');
     }
+  }
+
+
+  @override
+  Future<Document> getTweetById(String id) async {
+    return _db.getDocument(
+      databaseId: Environment.appwriteDatabaseID,
+      collectionId: Environment.appwriteTweetcollectionId,
+      documentId: id,
+    );
+  }
+
+  @override
+  Future<List<Document>> getUserTweets(String uid) async {
+    final documents = await _db.listDocuments(
+      databaseId: Environment.appwriteDatabaseID,
+      collectionId: Environment.appwriteTweetcollectionId,
+      queries: [
+        Query.equal('uid', uid),
+        Query.orderDesc('tweetedAt'),
+      ],
+    );
+    return documents.documents;
+  }
+
+  @override
+  Future<List<Document>> getTweetsByHashtag(String hashtag) async {
+    final documents = await _db.listDocuments(
+      databaseId: Environment.appwriteDatabaseID,
+      collectionId: Environment.appwriteTweetcollectionId,
+      queries: [Query.search('hashtags', hashtag)],
+    );
+    return documents.documents;
+  }
+
+  @override
+  Future<List<Document>> searchTweets(String query) async {
+    final documents = await _db.listDocuments(
+      databaseId: Environment.appwriteDatabaseID,
+      collectionId: Environment.appwriteTweetcollectionId,
+      queries: [
+        Query.search('text', query),
+        Query.orderDesc('tweetedAt'),
+        Query.limit(30),
+      ],
+    );
+    return documents.documents;
+  }
+
+  @override
+  Future<List<Document>> getRepliesToTweets(Tweet tweet) async {
+    final document = await _db.listDocuments(
+      databaseId: Environment.appwriteDatabaseID,
+      collectionId: Environment.appwriteTweetcollectionId,
+      queries: [
+        Query.equal('repliedTo', tweet.id),
+        Query.orderAsc('tweetedAt'),
+      ],
+    );
+    return document.documents;
   }
 }

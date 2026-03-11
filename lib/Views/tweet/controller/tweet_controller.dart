@@ -4,9 +4,6 @@ import 'package:appwrite/appwrite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:flutter_riverpod/legacy.dart';
-import 'package:flutter_riverpod/legacy.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
 import 'package:flutter_twitter_clone/apis/storageapi.dart';
 import 'package:flutter_twitter_clone/apis/tweetApi.dart';
@@ -16,6 +13,8 @@ import 'package:flutter_twitter_clone/model/tweet_model.dart';
 
 import '../../../model/usermodel.dart';
 
+///////////////////////Providers//////////////////
+
 final TweetControllerProvider = StateNotifierProvider<TweetController, bool>((
   ref,
 ) {
@@ -24,16 +23,33 @@ final TweetControllerProvider = StateNotifierProvider<TweetController, bool>((
   return TweetController(tweetAPI: tweetAPI, ref: ref, storageAPI: storageAPI);
 });
 
-final getTweetsProvider = FutureProvider((ref) {
-  final gettweetController = ref.watch(TweetControllerProvider.notifier);
-  return gettweetController.getTweets();
-});
-
 final getlatestTweetProvider = StreamProvider((ref) {
   final tweetAPI = ref.watch(TweetApiProvider);
   return tweetAPI.getLatestTweet();
 });
 
+final getTweetsProvider = FutureProvider((ref) {
+  final gettweetController = ref.watch(TweetControllerProvider.notifier);
+  return gettweetController.getTweets();
+});
+
+final getRepliesToTweetsProvider = FutureProvider.family((ref, Tweet tweet) {
+  return ref.watch(TweetControllerProvider.notifier).getRepliesToTweet(tweet);
+});
+
+final getTweetByIdProvider = FutureProvider.family((ref, String id) {
+  return ref.watch(TweetControllerProvider.notifier).getTweetById(id);
+});
+
+final getTweetsByHashtagProvider = FutureProvider.family((ref, String hashtag) {
+  return ref.watch(TweetControllerProvider.notifier).getTweetsByHashtag(hashtag);
+});
+
+final searchTweetsProvider = FutureProvider.family((ref, String query) {
+  return ref.watch(TweetControllerProvider.notifier).searchTweets(query);
+});
+
+///////////////////////////Controller Functions////////////////////
 class TweetController extends StateNotifier<bool> {
   final Tweetapi _tweetAPI;
   final StorageAPI _storageAPI;
@@ -66,15 +82,6 @@ class TweetController extends StateNotifier<bool> {
     tweet = tweet.copyWith(likes: likes);
     final res = await _tweetAPI.likeTweet(tweet);
     res.fold((onLeft) => null, (onRight) => null);
-    // final res = await _tweetAPI.likeTweet(tweet)
-    // res.fold((l) => null, (r) {
-    //   _notificationController.createNotification(
-    //     text: '${user.name} liked your tweet!',
-    //     postId: tweet.id,
-    //     notificationType: NotificationType.like,
-    //     uid: tweet.uid,
-    //   );
-    // });
   }
 
   void reshareTweet(Tweet tweet, UserModel user) async {
@@ -103,6 +110,8 @@ class TweetController extends StateNotifier<bool> {
     required List<File> images,
     required String text,
     required BuildContext context,
+    required String repliedTo,
+    required String repliedToUserId,
   }) {
     if (text.isEmpty) {
       showSnackBar(context, 'Please Enter Some Text');
@@ -113,6 +122,27 @@ class TweetController extends StateNotifier<bool> {
     } else {
       _shareTextTweet(text: text, context: context);
     }
+  }
+
+
+  Future<Tweet> getTweetById(String id) async {
+    final tweet = await _tweetAPI.getTweetById(id);
+    return Tweet.fromMap(tweet.data);
+  }
+
+  Future<List<Tweet>> getRepliesToTweet(Tweet tweet) async {
+    final documents = await _tweetAPI.getRepliesToTweets(tweet);
+    return documents.map((t) => Tweet.fromMap(t.data)).toList();
+  }
+
+  Future<List<Tweet>> getTweetsByHashtag(String hashtag) async {
+    final documents = await _tweetAPI.getTweetsByHashtag(hashtag);
+    return documents.map((t) => Tweet.fromMap(t.data)).toList();
+  }
+
+  Future<List<Tweet>> searchTweets(String query) async {
+    final documents = await _tweetAPI.searchTweets(query);
+    return documents.map((t) => Tweet.fromMap(t.data)).toList();
   }
 
   ///////////////////////////////////////////////////PRVIATE FUNCTIONS////////////////////////////////////
