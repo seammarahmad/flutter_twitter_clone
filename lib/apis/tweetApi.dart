@@ -25,6 +25,10 @@ abstract class TweetapiInterface {
   Future<Either<String, Document>> updateresharecountTweet(Tweet tweet);
 
   Future<List<Document>> getRepliesToTweets(Tweet tweet);
+
+  Future<List<Document>> getTweetsByHashtag(String hashtag);
+  Future<List<Document>> searchTweets(String query);
+  Future<Document> getTweetById(String id);
 }
 
 class Tweetapi implements TweetapiInterface {

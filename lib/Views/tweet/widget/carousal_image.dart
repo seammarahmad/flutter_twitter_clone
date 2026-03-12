@@ -17,46 +17,51 @@ class _CarousalImageState extends State<CarousalImage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Column(
-          children: [
-            CarouselSlider(
-              items: widget.imageslinks.map((file) {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Image.network(file, fit: BoxFit.contain),
-                );
-              }).toList(),
-              options: CarouselOptions(
-                viewportFraction: 1,
-                onPageChanged: (index, reason) {
-                  setState(() {
-                    _current = index;
-                  });
-                },
-                height: 400,
-                enableInfiniteScroll: false,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: Column(
+            children: [
+              CarouselSlider(
+                items: widget.imageslinks.map((file) {
+                  return Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Image.network(file, fit: BoxFit.cover),
+                  );
+                }).toList(),
+                options: CarouselOptions(
+                  viewportFraction: 1,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _current = index;
+                    });
+                  },
+                  height: 350,
+                  enableInfiniteScroll: false,
+                ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: widget.imageslinks.asMap().entries.map((toElement) {
-                return Container(
-                  width: 08,
-                  height: 08,
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _current == toElement.key
-                        ? Colors.white
-                        : Colors.grey,
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+              if (widget.imageslinks.length > 1)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: widget.imageslinks.asMap().entries.map((toElement) {
+                    return Container(
+                      width: 08,
+                      height: 08,
+                      margin: const EdgeInsets.symmetric(horizontal: 2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _current == toElement.key
+                            ? Colors.white
+                            : Colors.grey,
+                      ),
+                    );
+                  }).toList(),
+                ),
+            ],
+          ),
         ),
       ],
     );
