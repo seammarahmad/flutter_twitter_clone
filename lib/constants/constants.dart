@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_twitter_clone/Views/Explore/views/explore_view.dart';
 import 'package:flutter_twitter_clone/Views/tweet/widget/tweet_list.dart';
 import '../theme/pallete.dart';
 
@@ -16,9 +17,8 @@ class UIConstants {
   }
 
   static const List<Widget> bottomTabBarPages = [
-
     TweetList(),
-    Text('Search Page'),
+    ExploreView(),
     Text('Notification Page'),
 
     // TweetList(),

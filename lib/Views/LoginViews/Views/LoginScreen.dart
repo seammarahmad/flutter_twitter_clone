@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_twitter_clone/core/utils.dart';
+import 'package:flutter_twitter_clone/theme/pallete.dart';
 
 import '../constants/constants.dart';
 import '../controller/auth_controller.dart';
@@ -62,7 +63,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return isLoading
         ? LoadingPage()
         : Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: Pallete.backgroundColor,
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
@@ -76,7 +77,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         height: 200.0,
                         child: SvgPicture.asset(
                           'assets/svgs/twitter_logo.svg',
-                          color: Colors.lightBlueAccent,
+                          color: Pallete.blueColor,
                         ),
                       ),
                     ),
@@ -86,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     'Login',
                     style: kSendButtonTextStyle.copyWith(
                       fontSize: 30.0,
-                      color: Colors.lightBlueAccent,
+                      color: Pallete.blueColor,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -100,7 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     },
                     style: kTextStyle,
                     decoration: kTextFieldDesign(
-                      borderColor: Colors.lightBlueAccent,
+                      borderColor: Pallete.blueColor,
                       hintTexts: 'Enter Your Email',
                     ),
                   ),
@@ -113,7 +114,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       password = value;
                     },
                     decoration: kTextFieldDesign(
-                      borderColor: Colors.lightBlueAccent,
+                      borderColor: Pallete.blueColor,
                       hintTexts: 'Enter Your Password',
                     ),
                     style: kTextStyle,
@@ -121,7 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 24.0),
                   RoundButton(
                     title: 'Log In',
-                    colour: Colors.lightBlueAccent,
+                    colour: Pallete.blueColor,
                     onPress: () async {
                       Login();
                     }, Size: 200.0,
@@ -133,7 +134,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     children: [
                       const Text(
                         "Don\'t have an account?",
-                        style: TextStyle(fontSize: 10.0, color: Colors.black),
+                        style: TextStyle(fontSize: 10.0, color: Colors.white),
                       ),
                       TextButton(
                         onPressed: () {
@@ -143,7 +144,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           "Sign Up",
                           style: TextStyle(
                             fontSize: 15.0,
-                            color: Colors.lightBlueAccent,
+                            color: Pallete.blueColor,
                           ),
                         ),
                       ),

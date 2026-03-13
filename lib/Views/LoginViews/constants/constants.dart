@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../theme/pallete.dart';
+
 const kSendButtonTextStyle = TextStyle(
   color: Colors.lightBlueAccent,
   fontWeight: FontWeight.bold,
@@ -7,7 +9,7 @@ const kSendButtonTextStyle = TextStyle(
 );
 
 const kTextStyle = TextStyle(
-    color: Colors.black,
+    color: Pallete.whiteColor,
     fontFamily: 'Poppins',
     fontSize: 15.0
 );
@@ -16,7 +18,7 @@ InputDecoration kTextFieldDesign({required Color borderColor, required String hi
   return InputDecoration(
     hintText: hintTexts,
     hintStyle: const TextStyle(
-        color: Colors.black,
+        color: Pallete.greyColor,
         fontFamily: 'Poppins',
         fontSize: 10.0
     ),

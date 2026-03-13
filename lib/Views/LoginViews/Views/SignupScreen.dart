@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
 import '../../../core/utils.dart';
+import '../../../theme/pallete.dart';
 import '../constants/constants.dart';
 import 'LoginScreen.dart';
 
@@ -56,7 +57,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     final isLoading=ref.watch(authControllerprovider);
 
     return isLoading? const LoadingPage(): Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Pallete.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -69,14 +70,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 child: SizedBox(
                   height: 200.0,
                   child: SvgPicture.asset('assets/svgs/twitter_logo.svg',
-                    color: Colors.lightBlueAccent,),
+                    color: Pallete.blueColor,),
                 ),
               ),
             ),
             const SizedBox(height: 20.0),
             Text('Sign Up',
                 style: kSendButtonTextStyle.copyWith(
-                    fontSize: 30.0, color: Colors.lightBlueAccent),
+                    fontSize: 30.0, color: Pallete.blueColor),
                 textAlign: TextAlign.center),
             const SizedBox(height: 10.0),
             TextField(
@@ -88,7 +89,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 },
                 style: kTextStyle,
                 decoration: kTextFieldDesign(
-                    borderColor: Colors.lightBlueAccent,
+                    borderColor: Pallete.blueColor,
                     hintTexts: 'Enter Your Email')),
             const SizedBox(height: 8.0),
             TextField(
@@ -99,13 +100,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   password = value;
                 },
                 decoration: kTextFieldDesign(
-                    borderColor: Colors.lightBlueAccent,
+                    borderColor: Pallete.blueColor,
                     hintTexts: 'Enter Your Password'),
                 style: kTextStyle),
             const SizedBox(height: 24.0),
             RoundButton(
               title: 'Sign Up',
-              colour: Colors.lightBlueAccent,
+              colour: Pallete.blueColor,
               onPress: () async {
                 onSignUp();
               }, Size: 200.0,
@@ -120,7 +121,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 const Text("Already Have Account",
                     style: TextStyle(
                         fontSize: 10.0,
-                        color: Colors.black)),
+                        color: Pallete.whiteColor)),
                 TextButton(
                     onPressed: () {
                       Navigator.pushNamed(context, LoginScreen.id);
@@ -128,7 +129,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     child: const Text("Login",
                         style: TextStyle(
                             fontSize: 15.0,
-                            color: Colors.lightBlueAccent))),
+                            color: Pallete.blueColor))),
               ],
             )
           ],
