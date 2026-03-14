@@ -15,6 +15,7 @@ final userApiProvider = Provider((ref) {
 abstract class AUserApi {
   Future<Either<String, void>> saveUserData({required UserModel userModel});
   Future<Document> getUserData(String uid);
+  Future<List<Document>> searchUserByName(String name);
 }
 
 class UserApi extends AUserApi {
@@ -45,5 +46,13 @@ class UserApi extends AUserApi {
   Future<Document> getUserData(String uid) {
     return _db.getDocument(databaseId: Environment.appwriteDatabaseID, collectionId: Environment.collectionId, documentId: uid);
 
+  }
+
+  @override
+  Future<List<Document>> searchUserByName(String name) async {
+    final documents=await _db.listDocuments(databaseId: Environment.appwriteDatabaseID, collectionId: Environment.collectionId, queries: [
+      Query.search('name', name),
+    ]);
+    return documents.documents;
   }
 }
