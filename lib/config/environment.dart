@@ -3,7 +3,7 @@ class Environment {
   static const String appwritePublicEndpoint =
       'https://fra.cloud.appwrite.io/v1';
   static const String appwriteDatabaseID = '69983e44002753c747e1';
-  static const String collectionId = 'user';
+  static const String appwriteUserCollectionId = 'user';
 
   static const String appwriteTweetcollectionId = 'tweets';
 

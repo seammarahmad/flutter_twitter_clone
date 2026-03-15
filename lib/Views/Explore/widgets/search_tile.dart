@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../model/usermodel.dart';
 import '../../../theme/pallete.dart';
+import '../../User Profile/views/user_profile_view.dart';
 
 class SearchTile extends StatelessWidget {
   final UserModel userModel;
@@ -12,10 +13,10 @@ class SearchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      // onTap: () => Navigator.push(
-      //   context,
-      //   UserProfileView.route(userModel),
-      // ),
+      onTap: () => Navigator.push(
+        context,
+        UserProfileView.route(userModel),
+      ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       leading: Container(
         width: 48,
