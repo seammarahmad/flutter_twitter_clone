@@ -92,6 +92,17 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
           ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              _page == 3
+                  ? 'assets/svgs/profile.svg'
+                  : 'assets/svgs/profile_outline.svg',
+              colorFilter: const ColorFilter.mode(
+                Pallete.whiteColor,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
         ],
       ),
     );

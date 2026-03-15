@@ -82,12 +82,10 @@ class ErrorPage extends StatelessWidget {
 class EmptyStateWidget extends StatelessWidget {
   final String title;
   final String subtitle;
-  final IconData icon;
   const EmptyStateWidget({
     super.key,
     required this.title,
     required this.subtitle,
-    this.icon = Icons.inbox_outlined,
   });
 
   @override
@@ -98,8 +96,6 @@ class EmptyStateWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Pallete.greyColor, size: 56),
-            const SizedBox(height: 16),
             Text(
               title,
               style: const TextStyle(

@@ -41,7 +41,6 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
   }
 
   void _selectBanner() async {
-    //TODO
     final image = await pickImage();
     if (image != null) setState(() => _bannerFile = image);
   }

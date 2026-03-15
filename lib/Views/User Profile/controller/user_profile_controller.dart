@@ -14,15 +14,15 @@ import '../../../model/tweet_model.dart';
 import '../../../model/usermodel.dart';
 
 final userProfileControllerProvider =
-StateNotifierProvider<UserProfileController, bool>((ref) {
-  return UserProfileController(
-    tweetAPI: ref.watch(TweetApiProvider),
-    storageAPI: ref.watch(StorageAPIProvider),
-    userAPI: ref.watch(userApiProvider),
-    // notificationController:
-    // ref.watch(notificationControllerProvider.notifier),
-  );
-});
+    StateNotifierProvider<UserProfileController, bool>((ref) {
+      return UserProfileController(
+        tweetAPI: ref.watch(TweetApiProvider),
+        storageAPI: ref.watch(StorageAPIProvider),
+        userAPI: ref.watch(userApiProvider),
+        // notificationController:
+        // ref.watch(notificationControllerProvider.notifier),
+      );
+    });
 
 final getUserTweetsProvider = FutureProvider.family((ref, String uid) async {
   final controller = ref.watch(userProfileControllerProvider.notifier);
@@ -37,6 +37,7 @@ class UserProfileController extends StateNotifier<bool> {
   final Tweetapi _tweetAPI;
   final StorageAPI _storageAPI;
   final UserApi _userAPI;
+
   // final NotificationController _notificationController;
 
   UserProfileController({
@@ -44,11 +45,11 @@ class UserProfileController extends StateNotifier<bool> {
     required StorageAPI storageAPI,
     required UserApi userAPI,
     // required NotificationController notificationController,
-  })  : _tweetAPI = tweetAPI,
-        _storageAPI = storageAPI,
-        _userAPI = userAPI,
-        // _notificationController = notificationController,
-        super(false);
+  }) : _tweetAPI = tweetAPI,
+       _storageAPI = storageAPI,
+       _userAPI = userAPI,
+       // _notificationController = notificationController,
+       super(false);
 
   Future<List<Tweet>> getUserTweets(String uid) async {
     final tweets = await _tweetAPI.getUserTweets(uid);
@@ -76,13 +77,10 @@ class UserProfileController extends StateNotifier<bool> {
 
     final res = await _userAPI.updateUserData(updated);
     state = false;
-    res.fold(
-          (l) => showSnackBar(context, l.message),
-          (r) {
-        showSnackBar(context, 'Profile updated!');
-        Navigator.pop(context);
-      },
-    );
+    res.fold((l) => showSnackBar(context, l.message), (r) {
+      showSnackBar(context, 'Profile updated!');
+      Navigator.pop(context);
+    });
   }
 
   void followUser({
@@ -92,35 +90,36 @@ class UserProfileController extends StateNotifier<bool> {
   }) async {
     final isFollowing = currentUser.following.contains(user.uid);
 
-    final updatedUserFollowers = List<String>.from(user.followers);
-    final updatedCurrentFollowing = List<String>.from(currentUser.following);
-
     if (isFollowing) {
-      updatedUserFollowers.remove(currentUser.uid);
-      updatedCurrentFollowing.remove(user.uid);
+      user.followers.remove(currentUser.uid);
+      currentUser.following.remove(user.uid);
     } else {
-      updatedUserFollowers.add(currentUser.uid);
-      updatedCurrentFollowing.add(user.uid);
+      user.followers.add(currentUser.uid);
+      currentUser.following.add(user.uid);
     }
 
-    final updatedUser = user.copyWith(followers: updatedUserFollowers);
-    final updatedCurrent =
-    currentUser.copyWith(following: updatedCurrentFollowing);
+    user = user.copyWith(followers: user.followers);
+    currentUser = currentUser.copyWith(following: currentUser.following);
+    final res = await _userAPI.followUser(user);
+    res.fold((l) => showSnackBar(context, l.message), (r) async {
+      final res2 = await _userAPI.addToFollowing(currentUser);
+      res2.fold((l) => showSnackBar(context, l.message), (onRight) => null);
+    });
 
-  //   final res = await _userAPI.followUser(updatedUser);
-  //   res.fold((l) => showSnackBar(context, l.message), (r) async {
-  //     final res2 = await _userAPI.addToFollowing(updatedCurrent);
-  //     res2.fold((l) => showSnackBar(context, l.message), (r) {
-  //       if (!isFollowing) {
-  //         _notificationController.createNotification(
-  //           text: '${currentUser.name} started following you',
-  //           postId: '',
-  //           notificationType: NotificationType.follow,
-  //           uid: user.uid,
-  //           fromUserId: currentUser.uid,
-  //         );
-  //       }
-  //     });
-  //   });
+    //   final res = await _userAPI.followUser(updatedUser);
+    //   res.fold((l) => showSnackBar(context, l.message), (r) async {
+    //     final res2 = await _userAPI.addToFollowing(updatedCurrent);
+    //     res2.fold((l) => showSnackBar(context, l.message), (r) {
+    //       if (!isFollowing) {
+    //         _notificationController.createNotification(
+    //           text: '${currentUser.name} started following you',
+    //           postId: '',
+    //           notificationType: NotificationType.follow,
+    //           uid: user.uid,
+    //           fromUserId: currentUser.uid,
+    //         );
+    //       }
+    //     });
+    //   });
   }
 }

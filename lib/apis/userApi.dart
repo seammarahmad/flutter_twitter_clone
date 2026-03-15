@@ -19,6 +19,14 @@ abstract class AUserApi {
   Future<Document> getUserData(String uid);
 
   Future<List<Document>> searchUserByName(String name);
+
+  Future<Either<Failure, void>> updateUserData(UserModel userModel);
+
+  Future<Either<Failure, void>> addToFollowing(UserModel user);
+
+  Future<Either<Failure, void>> followUser(UserModel user);
+
+  Stream<RealtimeMessage> getLatestUserProfileData();
 }
 
 class UserApi extends AUserApi {

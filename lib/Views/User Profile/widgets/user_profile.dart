@@ -5,20 +5,28 @@ import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controlle
 import 'package:flutter_twitter_clone/Views/User%20Profile/controller/user_profile_controller.dart';
 import 'package:flutter_twitter_clone/core/utils.dart';
 
+import '../../../config/environment.dart';
+import '../../../model/tweet_model.dart';
 import '../../../model/usermodel.dart';
 import '../../../theme/pallete.dart';
+import '../../tweet/controller/tweet_controller.dart';
 import '../../tweet/widget/tweet_card.dart';
 import '../views/edit_profile_view.dart';
+
 class UserProfile extends ConsumerWidget {
   final UserModel user;
-  const UserProfile({super.key, required this.user});
+  final bool isFromBottomNav;
+  const UserProfile({
+    super.key,
+    required this.user,
+    this.isFromBottomNav = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserdetailsProvider).value;
     final isCurrentUser = currentUser?.uid == user.uid;
-    final isFollowing =
-        currentUser?.following.contains(user.uid) ?? false;
+    final isFollowing = currentUser?.following.contains(user.uid) ?? false;
 
     if (currentUser == null) return const Loader();
 
@@ -30,18 +38,30 @@ class UserProfile extends ConsumerWidget {
             pinned: true,
             floating: false,
             backgroundColor: Pallete.backgroundColor,
-            leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  shape: BoxShape.circle,
+            automaticallyImplyLeading: !isFromBottomNav,
+            leading: isFromBottomNav
+                ? null
+                : IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.arrow_back_rounded,
+                          color: Colors.white, size: 18),
+                    ),
+                  ),
+            actions: [
+              if (isFromBottomNav && isCurrentUser)
+                IconButton(
+                  onPressed: () {
+                    ref.read(authControllerprovider.notifier).logout(context);
+                  },
+                  icon: const Icon(Icons.logout, color: Pallete.whiteColor),
                 ),
-                child: const Icon(Icons.arrow_back_rounded,
-                    color: Colors.white, size: 18),
-              ),
-            ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
@@ -49,24 +69,24 @@ class UserProfile extends ConsumerWidget {
                   // Banner
                   user.bannerPic.isNotEmpty
                       ? Image.network(
-                    user.bannerPic,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: Pallete.blueColor.withOpacity(0.3),
-                    ),
-                  )
+                          user.bannerPic,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: Pallete.blueColor.withOpacity(0.3),
+                          ),
+                        )
                       : Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Pallete.blueColor.withOpacity(0.6),
-                          Pallete.greyColor.withOpacity(0.4),
-                        ],
-                      ),
-                    ),
-                  ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Pallete.blueColor.withOpacity(0.6),
+                                Pallete.greyColor.withOpacity(0.4),
+                              ],
+                            ),
+                          ),
+                        ),
 
                   // Gradient overlay
                   const DecoratedBox(
@@ -81,28 +101,26 @@ class UserProfile extends ConsumerWidget {
                       ),
                     ),
                   ),
-
-
                 ],
               ),
             ),
           ),
           SliverToBoxAdapter(
             child: Container(
-              margin: EdgeInsets.only(top: 30),
+              margin: const EdgeInsets.only(top: 30),
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Avatar and follow button row
+                  /// Avatar and follow button row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      // Avatar
+                      /// Avatar
                       Transform.translate(
                         offset: const Offset(0, -30),
-                        child:Container(
+                        child: Container(
                           width: 80,
                           height: 80,
                           decoration: const BoxDecoration(
@@ -112,85 +130,88 @@ class UserProfile extends ConsumerWidget {
                           clipBehavior: Clip.antiAlias,
                           child: user.profilePic.isNotEmpty
                               ? Image.network(
-                            user.profilePic,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                            const Icon(Icons.person, color: Pallete.greyColor),
-                          )
-                              : const Icon(Icons.person, color: Pallete.greyColor),
+                                  user.profilePic,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => const Icon(
+                                      Icons.person,
+                                      color: Pallete.greyColor),
+                                )
+                              : const Icon(Icons.person,
+                                  color: Pallete.greyColor),
                         ),
                       ),
 
-                      // Follow/Edit button
+                      /// Follow/Edit button
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: isCurrentUser
                             ? OutlinedButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            EditProfileView.route(),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(
-                              color: Pallete.searchBarColor,
-                              width: 1.5,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 8,
-                            ),
-                          ),
-                          child: const Text(
-                            'Edit profile',
-                            style: TextStyle(
-                              color: Pallete.whiteColor,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                            ),
-                          ),
-                        )
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  EditProfileView.route(),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                    color: Pallete.searchBarColor,
+                                    width: 1.5,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Edit profile',
+                                  style: TextStyle(
+                                    color: Pallete.whiteColor,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
                             : ElevatedButton(
-                          onPressed: () {
-                            ref
-                                .read(userProfileControllerProvider
-                                .notifier)
-                                .followUser(
-                              user: user,
-                              context: context,
-                              currentUser: currentUser,
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isFollowing
-                                ? Colors.transparent
-                                : Pallete.whiteColor,
-                            foregroundColor: isFollowing
-                                ? Pallete.whiteColor
-                                : Pallete.backgroundColor,
-                            side: isFollowing
-                                ? const BorderSide(
-                                color: Pallete.searchBarColor, width: 1.5)
-                                : null,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 8,
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            isFollowing ? 'Following' : 'Follow',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
+                                onPressed: () {
+                                  ref
+                                      .read(userProfileControllerProvider
+                                          .notifier)
+                                      .followUser(
+                                        user: user,
+                                        currentUser: currentUser,
+                                        context: context,
+                                      );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isFollowing
+                                      ? Colors.transparent
+                                      : Pallete.whiteColor,
+                                  foregroundColor: isFollowing
+                                      ? Pallete.whiteColor
+                                      : Pallete.backgroundColor,
+                                  side: isFollowing
+                                      ? const BorderSide(
+                                          color: Pallete.searchBarColor,
+                                          width: 1.5)
+                                      : null,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 8,
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: Text(
+                                  isFollowing ? 'Following' : 'Follow',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                       ),
                     ],
                   ),
@@ -266,24 +287,68 @@ class UserProfile extends ConsumerWidget {
         ];
       },
       body: ref.watch(getUserTweetsProvider(user.uid)).when(
-        data: (tweets) {
-          if (tweets.isEmpty) {
-            return const EmptyStateWidget(
-              title: 'No posts yet',
-              subtitle: "This user hasn't posted anything yet",
-              icon: Icons.article_outlined,
-            );
-          }
-          return ListView.builder(
-            itemCount: tweets.length,
-            itemBuilder: (context, index) {
-              return TweetCard(tweet: tweets[index]);
+            data: (tweets) {
+              return ref.watch(getlatestTweetProvider).when(
+                    data: (data) {
+                      final latestTweet = Tweet.fromMap(data.payload);
+
+                      bool isTweetAlreadyPresent = false;
+                      for (final tweetModel in tweets) {
+                        if (tweetModel.id == latestTweet.id) {
+                          isTweetAlreadyPresent = true;
+                          break;
+                        }
+                      }
+
+                      if (!isTweetAlreadyPresent && latestTweet.uid == user.uid) {
+                        if (data.events.contains(
+                          'databases.*.collections.${Environment.appwriteTweetcollectionId}.documents.*.create',
+                        )) {
+                          tweets.insert(0, latestTweet);
+                        } else if (data.events.contains(
+                          'databases.*.collections.${Environment.appwriteTweetcollectionId}.documents.*.update',
+                        )) {
+                          // get id of original tweet
+                          final startingPoint =
+                              data.events[0].lastIndexOf('documents.');
+                          final endPoint = data.events[0].lastIndexOf('.update');
+                          final tweetId =
+                              data.events[0].substring(startingPoint + 10, endPoint);
+
+                          var tweet =
+                              tweets.where((element) => element.id == tweetId).first;
+
+                          final tweetIndex = tweets.indexOf(tweet);
+                          tweets.removeWhere((element) => element.id == tweetId);
+
+                          tweet = Tweet.fromMap(data.payload);
+                          tweets.insert(tweetIndex, tweet);
+                        }
+                      }
+
+                      return ListView.builder(
+                        itemCount: tweets.length,
+                        itemBuilder: (context, index) {
+                          return TweetCard(tweet: tweets[index]);
+                        },
+                      );
+                    },
+                    error: (error, stackTrace) => ErrorMessage(
+                      error: error.toString(),
+                    ),
+                    loading: () {
+                      return ListView.builder(
+                        itemCount: tweets.length,
+                        itemBuilder: (context, index) {
+                          return TweetCard(tweet: tweets[index]);
+                        },
+                      );
+                    },
+                  );
             },
-          );
-        },
-        loading: () => const Loader(),
-        error: (e, _) => ErrorMessage(error: e.toString()),
-      ),
+            loading: () => const Loader(),
+            error: (e, _) => ErrorMessage(error: e.toString()),
+          ),
     );
   }
 

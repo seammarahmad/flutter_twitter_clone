@@ -32,9 +32,9 @@ class UserProfileView extends ConsumerWidget {
               );
             }
           } catch (_) {}
-          return UserProfile(user: currentUser);
+          return UserProfile(user: currentUser, isFromBottomNav: false);
         },
-        loading: () => UserProfile(user: currentUser),
+        loading: () => UserProfile(user: currentUser, isFromBottomNav: false),
         error: (e, _) => ErrorMessage(error: e.toString()),
       ),
     );

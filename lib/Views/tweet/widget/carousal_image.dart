@@ -1,67 +1,71 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-class CarousalImage extends StatefulWidget {
-  final List<String> imageslinks;
-
-  const CarousalImage({super.key, required this.imageslinks});
+class CarouselImage extends StatefulWidget {
+  final List<String> imageLinks;
+  const CarouselImage({
+    super.key,
+    required this.imageLinks,
+  });
 
   @override
-  State<CarousalImage> createState() => _CarousalImageState();
+  State<CarouselImage> createState() => _CarouselImageState();
 }
 
-class _CarousalImageState extends State<CarousalImage> {
+class _CarouselImageState extends State<CarouselImage> {
   int _current = 0;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
+      alignment: Alignment.center,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(25),
-          child: Column(
-            children: [
-              CarouselSlider(
-                items: widget.imageslinks.map((file) {
+        Column(
+          children: [
+            CarouselSlider(
+              items: widget.imageLinks.map(
+                    (link) {
                   return Container(
-                    width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),
                     ),
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Image.network(file, fit: BoxFit.cover),
+                    margin: const EdgeInsets.all(10),
+                    child: Image.network(
+                      link,
+                      fit: BoxFit.contain,
+                    ),
                   );
-                }).toList(),
-                options: CarouselOptions(
-                  viewportFraction: 1,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _current = index;
-                    });
-                  },
-                  height: 350,
-                  enableInfiniteScroll: false,
-                ),
+                },
+              ).toList(),
+              options: CarouselOptions(
+                viewportFraction: 1,
+                enableInfiniteScroll: false,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _current = index;
+                  });
+                },
               ),
-              if (widget.imageslinks.length > 1)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: widget.imageslinks.asMap().entries.map((toElement) {
-                    return Container(
-                      width: 08,
-                      height: 08,
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _current == toElement.key
-                            ? Colors.white
-                            : Colors.grey,
-                      ),
-                    );
-                  }).toList(),
-                ),
-            ],
-          ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: widget.imageLinks.asMap().entries.map((e) {
+                return Container(
+                  width: 12,
+                  height: 12,
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(
+                      _current == e.key ? 0.9 : 0.4,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ),
       ],
     );

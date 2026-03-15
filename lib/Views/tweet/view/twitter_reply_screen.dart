@@ -9,8 +9,10 @@ import '../controller/tweet_controller.dart';
 import '../widget/tweet_card.dart';
 
 class TwitterReplyScreen extends ConsumerStatefulWidget {
-  static route(Tweet tweet) =>
-      MaterialPageRoute(builder: (context) => TwitterReplyScreen(tweet: tweet));
+  static route(Tweet tweet) => MaterialPageRoute(
+        builder: (context) => TwitterReplyScreen(tweet: tweet),
+        settings: const RouteSettings(name: 'twitter_reply_screen'),
+      );
   final Tweet tweet;
 
   const TwitterReplyScreen({super.key, required this.tweet});
@@ -33,9 +35,7 @@ class _TwitterReplyScreenState extends ConsumerState<TwitterReplyScreen> {
   void _submitReply() {
     final text = _replyController.text.trim();
     if (text.isEmpty) return;
-    ref
-        .read(TweetControllerProvider.notifier)
-        .shareTweet(
+    ref.read(TweetControllerProvider.notifier).shareTweet(
           images: [],
           text: text,
           context: context,
@@ -58,125 +58,117 @@ class _TwitterReplyScreenState extends ConsumerState<TwitterReplyScreen> {
         ),
         title: const Text('Post'),
       ),
-      body: Column(
-        children: [
-          // Original tweet
-          TweetCard(tweet: widget.tweet),
-
-          // Replies divider
-          Padding(
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: TweetCard(tweet: widget.tweet),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  const Text(
+                    'Replies',
+                    style: TextStyle(
+                      color: Pallete.greyColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Container(height: 0.5, color: Pallete.blueColor),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          ref.watch(getRepliesToTweetsProvider(widget.tweet)).when(
+                data: (replies) {
+                  return ref.watch(getlatestTweetProvider).when(
+                        data: (data) {
+                          final allReplies = List<Tweet>.from(replies);
+                          _applyRealtimeUpdate(data, allReplies);
+                          return _buildSliverRepliesList(allReplies);
+                        },
+                        loading: () => _buildSliverRepliesList(replies),
+                        error: (_, __) => _buildSliverRepliesList(replies),
+                      );
+                },
+                loading: () => const SliverFillRemaining(
+                  child: Center(child: Loader()),
+                ),
+                error: (e, _) => SliverFillRemaining(
+                  child: Center(child: ErrorMessage(error: e.toString())),
+                ),
+              ),
+        ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: SafeArea(
+          child: Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Pallete.blueColor, width: 0.5),
+              ),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                const Text(
-                  'Replies',
-                  style: TextStyle(
-                    color: Pallete.greyColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                if (currentUser != null)
+                  _buildMiniAvatar(currentUser.profilePic),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _replyController,
+                    focusNode: _focusNode,
+                    style: const TextStyle(
+                      color: Pallete.whiteColor,
+                      fontSize: 15,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Post your reply',
+                      hintStyle: const TextStyle(
+                        color: Pallete.greyColor,
+                        fontSize: 15,
+                      ),
+                      filled: true,
+                      fillColor: Pallete.searchBarColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                    ),
+                    maxLines: null,
+                    textCapitalization: TextCapitalization.sentences,
+                    onSubmitted: (_) => _submitReply(),
                   ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Container(height: 0.5, color: Pallete.blueColor),
+                GestureDetector(
+                  onTap: _submitReply,
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: Pallete.blueColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_upward_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-
-          // Replies list
-          Expanded(
-            child: ref
-                .watch(getRepliesToTweetsProvider(widget.tweet))
-                .when(
-                  data: (replies) {
-                    if (replies.isEmpty) {
-                      return const EmptyStateWidget(
-                        title: 'No replies yet',
-                        subtitle: 'Be the first to reply!',
-                        icon: Icons.chat_bubble_outline_rounded,
-                      );
-                    }
-
-                    // Apply realtime updates safely
-                    return ref
-                        .watch(getlatestTweetProvider)
-                        .when(
-                          data: (data) {
-                            final allReplies = List<Tweet>.from(replies);
-                            _applyRealtimeUpdate(data, allReplies);
-                            return _buildRepliesList(allReplies);
-                          },
-                          loading: () => _buildRepliesList(replies),
-                          error: (_, __) => _buildRepliesList(replies),
-                        );
-                  },
-                  loading: () => const Loader(),
-                  error: (e, _) => ErrorMessage(error: e.toString()),
-                ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(color: Pallete.blueColor, width: 0.5),
-            ),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: [
-              if (currentUser != null) _buildMiniAvatar(currentUser.profilePic),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextField(
-                  controller: _replyController,
-                  focusNode: _focusNode,
-                  style: const TextStyle(
-                    color: Pallete.whiteColor,
-                    fontSize: 15,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Post your reply',
-                    hintStyle: const TextStyle(
-                      color: Pallete.greyColor,
-                      fontSize: 15,
-                    ),
-                    filled: true,
-                    fillColor: Pallete.searchBarColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                  ),
-                  maxLines: null,
-                  textCapitalization: TextCapitalization.sentences,
-                  onSubmitted: (_) => _submitReply(),
-                ),
-              ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: _submitReply,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    color: Pallete.blueColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.arrow_upward_rounded,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                ),
-              ),
-            ],
           ),
         ),
       ),
@@ -213,12 +205,24 @@ class _TwitterReplyScreenState extends ConsumerState<TwitterReplyScreen> {
     } catch (_) {}
   }
 
-  Widget _buildRepliesList(List<Tweet> replies) {
-    return ListView.builder(
-      itemCount: replies.length,
-      itemBuilder: (context, index) {
-        return TweetCard(tweet: replies[index]);
-      },
+  Widget _buildSliverRepliesList(List<Tweet> replies) {
+    if (replies.isEmpty) {
+      return const SliverFillRemaining(
+        child: Center(
+          child: EmptyStateWidget(
+            title: 'No replies yet',
+            subtitle: 'Be the first to reply!',
+          ),
+        ),
+      );
+    }
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return TweetCard(tweet: replies[index]);
+        },
+        childCount: replies.length,
+      ),
     );
   }
 
@@ -226,7 +230,7 @@ class _TwitterReplyScreenState extends ConsumerState<TwitterReplyScreen> {
     return Container(
       width: 36,
       height: 36,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
         color: Pallete.searchBarColor,
       ),
