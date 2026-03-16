@@ -20,7 +20,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   void Login() {
     if (validateForm(email!, password!)) {
-      final res = ref
+      ref
           .read(authControllerprovider.notifier)
           .Login(
             email: emailController.text,

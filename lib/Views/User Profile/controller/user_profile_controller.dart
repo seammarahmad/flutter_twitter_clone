@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_twitter_clone/Views/Notifications/controller/notification_controller.dart';
 import 'package:flutter_twitter_clone/apis/storageapi.dart';
 import 'package:flutter_twitter_clone/apis/tweetApi.dart';

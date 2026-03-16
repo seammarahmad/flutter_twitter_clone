@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_twitter_clone/Views/HomeScreen/widget/side_drawer.dart';
-import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
 import 'package:flutter_twitter_clone/Views/tweet/view/create_tweet_view.dart';
 import 'package:flutter_twitter_clone/constants/constants.dart';
 import 'package:flutter_twitter_clone/theme/pallete.dart';

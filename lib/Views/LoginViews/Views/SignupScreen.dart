@@ -27,7 +27,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   void onSignUp(){
     if(validateForm(email!, password!)){
-     final res=ref.read(authControllerprovider.notifier).signUp(email: emailController.text, password: passwordController.text, context: context);
+     ref.read(authControllerprovider.notifier).signUp(email: emailController.text, password: passwordController.text, context: context);
     }
   }
 

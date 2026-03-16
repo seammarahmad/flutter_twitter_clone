@@ -30,6 +30,7 @@ abstract class TweetapiInterface {
   Future<List<Document>> searchTweets(String query);
   Future<Document> getTweetById(String id);
   Future<Either<String, Document>> updateCommentIds(Tweet tweet);
+  Future<List<Document>> getUserTweets(String uid);
 }
 
 class Tweetapi implements TweetapiInterface {
@@ -84,10 +85,9 @@ class Tweetapi implements TweetapiInterface {
         data: {'likes': tweet.likes},
       );
       return right(document);
-    } on AppwriteException catch (e, st) {
+    } on AppwriteException catch (e) {
       return left(e.message ?? 'Some unexpected error occured');
-    } catch (e, st) {
-      print('error in Tweet api : ' + e.toString());
+    } catch (e) {
       return left('Some unexpected error occured in the likes tweet api');
     }
   }
@@ -102,9 +102,9 @@ class Tweetapi implements TweetapiInterface {
         data: {'reshareCount': tweet.reshareCount},
       );
       return right(document);
-    } on AppwriteException catch (e, st) {
+    } on AppwriteException catch (e) {
       return left(e.message ?? 'Some unexpected error occured');
-    } catch (e, st) {
+    } catch (e) {
       print('error in Tweet api : ' + e.toString());
       return left('Some unexpected error occured in the likes tweet api');
     }
@@ -180,9 +180,9 @@ class Tweetapi implements TweetapiInterface {
         data: {'commentIds': tweet.commentIds},
       );
       return right(document);
-    } on AppwriteException catch (e, st) {
+    } on AppwriteException catch (e) {
       return left(e.message ?? 'Some unexpected error occured');
-    } catch (e, st) {
+    } catch (e) {
       return left(e.toString());
     }
   }

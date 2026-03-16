@@ -19,7 +19,6 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     searchController.dispose();
   }

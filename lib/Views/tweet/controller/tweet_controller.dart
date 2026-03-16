@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
 import 'package:flutter_twitter_clone/Views/Notifications/controller/notification_controller.dart';
-import 'package:flutter_twitter_clone/apis/notificationApi.dart';
 import 'package:flutter_twitter_clone/apis/storageapi.dart';
 import 'package:flutter_twitter_clone/apis/tweetApi.dart';
 import 'package:flutter_twitter_clone/core/enum/tweet_enum.dart';
