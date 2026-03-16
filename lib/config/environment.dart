@@ -4,8 +4,8 @@ class Environment {
       'https://fra.cloud.appwrite.io/v1';
   static const String appwriteDatabaseID = '69983e44002753c747e1';
   static const String appwriteUserCollectionId = 'user';
-
   static const String appwriteTweetcollectionId = 'tweets';
+  static const String appwriteNotificationcollectionId = 'notifications';
 
   static const String appwriteStorageBucketID = '69ab3ce10039132e52d1';
 

@@ -59,7 +59,13 @@ class UserProfile extends ConsumerWidget {
                   onPressed: () {
                     ref.read(authControllerprovider.notifier).logout(context);
                   },
-                  icon: const Icon(Icons.logout, color: Pallete.whiteColor),
+                  icon: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.logout, color: Colors.red,size: 30,)),
                 ),
             ],
             flexibleSpace: FlexibleSpaceBar(

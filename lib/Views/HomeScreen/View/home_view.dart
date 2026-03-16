@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_twitter_clone/Views/HomeScreen/widget/side_drawer.dart';
 import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
 import 'package:flutter_twitter_clone/Views/tweet/view/create_tweet_view.dart';
 import 'package:flutter_twitter_clone/constants/constants.dart';
@@ -36,16 +37,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                 height: 30,
               ),
               centerTitle: true,
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    ref.read(authControllerprovider.notifier).logout(context);
-                  },
-                  icon: const Icon(Icons.logout, color: Pallete.whiteColor),
-                ),
-              ],
             )
           : null,
+
+      drawer: SideDrawer(),
 
       body: IndexedStack(index: _page, children: UIConstants.bottomTabBarPages),
 

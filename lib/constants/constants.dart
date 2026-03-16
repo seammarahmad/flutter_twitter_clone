@@ -21,7 +21,7 @@ class UIConstants {
   static const List<Widget> bottomTabBarPages = [
     TweetList(),
     ExploreView(),
-    NotificationScreen(),
+    NotificationView(),
     CurrentUserProfileView(),
   ];
 }

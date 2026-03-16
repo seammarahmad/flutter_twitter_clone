@@ -29,6 +29,7 @@ abstract class TweetapiInterface {
   Future<List<Document>> getTweetsByHashtag(String hashtag);
   Future<List<Document>> searchTweets(String query);
   Future<Document> getTweetById(String id);
+  Future<Either<String, Document>> updateCommentIds(Tweet tweet);
 }
 
 class Tweetapi implements TweetapiInterface {
@@ -137,7 +138,7 @@ class Tweetapi implements TweetapiInterface {
     final documents = await _db.listDocuments(
       databaseId: Environment.appwriteDatabaseID,
       collectionId: Environment.appwriteTweetcollectionId,
-      queries: [Query.search('hashtags', hashtag)],
+      queries: [Query.equal('hashtags', hashtag)],
     );
     return documents.documents;
   }
@@ -167,5 +168,22 @@ class Tweetapi implements TweetapiInterface {
       ],
     );
     return document.documents;
+  }
+
+  @override
+  Future<Either<String, Document>> updateCommentIds(Tweet tweet) async {
+    try {
+      final document = await _db.updateDocument(
+        databaseId: Environment.appwriteDatabaseID,
+        collectionId: Environment.appwriteTweetcollectionId,
+        documentId: tweet.id,
+        data: {'commentIds': tweet.commentIds},
+      );
+      return right(document);
+    } on AppwriteException catch (e, st) {
+      return left(e.message ?? 'Some unexpected error occured');
+    } catch (e, st) {
+      return left(e.toString());
+    }
   }
 }
