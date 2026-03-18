@@ -25,7 +25,7 @@ class TweetCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserdetailsProvider).value;
     return currentUser == null
-        ? Loader()
+        ? const Loader()
         : ref
               .watch(userDetailsProvider(tweet.uid))
               .when(
@@ -36,7 +36,7 @@ class TweetCard extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: EdgeInsets.all(20.0),
+                            margin: const EdgeInsets.all(20.0),
                             child: GestureDetector(
                               onTap: (){
                                 Navigator.push(context, UserProfileView.route(user));
@@ -48,7 +48,7 @@ class TweetCard extends ConsumerWidget {
                                     ? NetworkImage(user.profilePic)
                                     : null,
                                 child: user.profilePic.isEmpty
-                                    ? Icon(Icons.person)
+                                    ? const Icon(Icons.person)
                                     : null,
                               ),
                             ),
@@ -59,31 +59,54 @@ class TweetCard extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (tweet.retweetedBy.isNotEmpty)
-                                  Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/svgs/retweet.svg',
-                                        color: Pallete.greyColor,
-                                        height: 20,
-                                      ),
-                                      const SizedBox(width: 2),
-                                      Text(
-                                        '${tweet.retweetedBy} retweeted',
-                                        style: const TextStyle(
+                                  ref.watch(userDetailsProvider(tweet.retweetedBy)).when(
+                                    data: (retweeter) {
+                                      return Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/svgs/retweet.svg',
+                                            color: Pallete.greyColor,
+                                            height: 20,
+                                          ),
+                                          const SizedBox(width: 2),
+                                          Text(
+                                            '${retweeter.name} retweeted',
+                                            style: const TextStyle(
+                                              color: Pallete.greyColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                    error: (error, stackTrace) => Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/svgs/retweet.svg',
                                           color: Pallete.greyColor,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
+                                          height: 20,
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(width: 2),
+                                        Text(
+                                          '${tweet.retweetedBy} retweeted',
+                                          style: const TextStyle(
+                                            color: Pallete.greyColor,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    loading: () => const SizedBox(),
                                   ),
                                 Row(
                                   children: [
                                     Container(
-                                      margin: EdgeInsets.only(right: 05),
+                                      margin: const EdgeInsets.only(right: 05),
                                       child: Text(
                                         user.name,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Pallete.whiteColor,
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -101,14 +124,23 @@ class TweetCard extends ConsumerWidget {
                                       ),
 
                                     Text(
-                                      "@${user.name} . ${timeago.format(tweet.tweetedAt, locale: 'en_short')}",
-                                      style: TextStyle(
+                                      " ${timeago.format(tweet.tweetedAt, locale: 'en_short')}",
+                                      style: const TextStyle(
                                         color: Pallete.greyColor,
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
+                                ),
+
+                                Text(
+                                  "@${user.name} ",
+                                  style: const TextStyle(
+                                    color: Pallete.greyColor,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
 
                                 if (tweet.repliedTo.isNotEmpty)
@@ -129,7 +161,7 @@ class TweetCard extends ConsumerWidget {
                                           return RichText(
                                             text: TextSpan(
                                               text: 'Replying to',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Pallete.greyColor,
                                                 fontSize: 16,
                                               ),
@@ -137,7 +169,7 @@ class TweetCard extends ConsumerWidget {
                                                 TextSpan(
                                                   text:
                                                       '@${replingtoUser?.name}',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     color: Pallete.blueColor,
                                                     fontSize: 16,
                                                   ),
@@ -150,7 +182,7 @@ class TweetCard extends ConsumerWidget {
                                             ErrorMessage(
                                               error: error.toString(),
                                             ),
-                                        loading: () => SizedBox(),
+                                        loading: () => const SizedBox(),
                                       ),
 
                                 HashtagText(text: tweet.text),
@@ -256,7 +288,7 @@ class TweetCard extends ConsumerWidget {
 
                                     IconButton(
                                       onPressed: () {},
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.share_outlined,
                                         size: 25,
                                         color: Pallete.greyColor,
@@ -276,7 +308,7 @@ class TweetCard extends ConsumerWidget {
                 },
                 error: (error, stackTrace) =>
                     ErrorMessage(error: error.toString()),
-                loading: () => Loader(),
+                loading: () => const Loader(),
               );
   }
 }

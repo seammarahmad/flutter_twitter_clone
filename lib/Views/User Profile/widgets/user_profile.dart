@@ -53,21 +53,7 @@ class UserProfile extends ConsumerWidget {
                           color: Colors.white, size: 18),
                     ),
                   ),
-            actions: [
-              if (isFromBottomNav && isCurrentUser)
-                IconButton(
-                  onPressed: () {
-                    ref.read(authControllerprovider.notifier).logout(context);
-                  },
-                  icon: Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.logout, color: Colors.red,size: 30,)),
-                ),
-            ],
+
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,

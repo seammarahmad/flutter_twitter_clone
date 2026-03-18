@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_twitter_clone/Views/LoginViews/controller/auth_controller.dart';
 import 'package:flutter_twitter_clone/Views/HomeScreen/widget/side_drawer.dart';
+import 'package:flutter_twitter_clone/Views/tweet/controller/tweet_controller.dart';
 import 'package:flutter_twitter_clone/Views/tweet/view/create_tweet_view.dart';
 import 'package:flutter_twitter_clone/constants/constants.dart';
 import 'package:flutter_twitter_clone/theme/pallete.dart';
@@ -36,6 +38,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 height: 30,
               ),
               centerTitle: true,
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    ref.invalidate(getTweetsProvider);
+                  },
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
             )
           : null,
 
@@ -44,9 +54,17 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: IndexedStack(index: _page, children: UIConstants.bottomTabBarPages),
 
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        backgroundColor: _page == 3 ? Colors.red : Pallete.blueColor,
+        child: Icon(
+          _page == 3 ? Icons.logout : Icons.add,
+          color: Pallete.whiteColor,
+        ),
         onPressed: () {
-          Navigator.pushNamed(context, CreateTweetView.id);
+          if (_page == 3) {
+            ref.read(authControllerprovider.notifier).logout(context);
+          } else {
+            Navigator.pushNamed(context, CreateTweetView.id);
+          }
         },
       ),
 

@@ -12,6 +12,7 @@ import '../../../core/enum/notification_enum.dart';
 import '../../../core/utils.dart';
 import '../../../model/tweet_model.dart';
 import '../../../model/usermodel.dart';
+import '../../LoginViews/controller/auth_controller.dart';
 
 final userProfileControllerProvider =
     StateNotifierProvider<UserProfileController, bool>((ref) {
@@ -22,6 +23,7 @@ final userProfileControllerProvider =
         notificationController: ref.watch(
           notificationControllerProvider.notifier,
         ),
+        ref: ref,
       );
     });
 
@@ -39,18 +41,19 @@ class UserProfileController extends StateNotifier<bool> {
   final StorageAPI _storageAPI;
   final UserApi _userAPI;
   final NotificationController _notificationController;
-
-  // final NotificationController _notificationController;
+  final Ref _ref;
 
   UserProfileController({
     required Tweetapi tweetAPI,
     required StorageAPI storageAPI,
     required UserApi userAPI,
     required NotificationController notificationController,
+    required Ref ref,
   }) : _notificationController = notificationController,
        _tweetAPI = tweetAPI,
        _storageAPI = storageAPI,
        _userAPI = userAPI,
+       _ref = ref,
        super(false);
 
   Future<List<Tweet>> getUserTweets(String uid) async {
@@ -80,6 +83,8 @@ class UserProfileController extends StateNotifier<bool> {
     final res = await _userAPI.updateUserData(updated);
     state = false;
     res.fold((l) => showSnackBar(context, l.message), (r) {
+      _ref.invalidate(currentUserdetailsProvider);
+      _ref.invalidate(userDetailsProvider(updated.uid));
       showSnackBar(context, 'Profile updated!');
       Navigator.pop(context);
     });

@@ -108,7 +108,7 @@ class TweetController extends StateNotifier<bool> {
       tweet = tweet.copyWith(
         id: ID.unique(),
         reshareCount: 0,
-        retweetedBy: user.name,
+        retweetedBy: user.uid,
         likes: [],
         commentIds: [],
         tweetedAt: DateTime.now(),
