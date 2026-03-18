@@ -3,6 +3,7 @@ import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_twitter_clone/Views/HomeScreen/View/home_view.dart';
+import 'package:flutter_twitter_clone/Views/LoginViews/Views/LoginScreen.dart';
 import 'package:flutter_twitter_clone/apis/authapi.dart';
 import 'package:flutter_twitter_clone/apis/userApi.dart';
 import 'package:flutter_twitter_clone/core/utils.dart';
@@ -109,7 +110,7 @@ class AuthController extends Notifier<bool> {
         res2.fold((l) => showSnackBar(context, l), (r) {
           showSnackBar(context, 'Account created successfully');
           ref.invalidate(currentUserAccountProvider);
-          Navigator.pushNamedAndRemoveUntil(context, HomePage.id, (route) => false);
+          Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id, (route) => false);
         });
       });
     } catch (e) {
