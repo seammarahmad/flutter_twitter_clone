@@ -1,13 +1,26 @@
-class Environment {
-  static const String appwriteProjectId = '6988c91d0038984a63a1';
-  static const String appwritePublicEndpoint =
-      'https://fra.cloud.appwrite.io/v1';
-  static const String appwriteDatabaseID = '69983e44002753c747e1';
-  static const String appwriteUserCollectionId = 'user';
-  static const String appwriteTweetcollectionId = 'tweets';
-  static const String appwriteNotificationcollectionId = 'notifications';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-  static const String appwriteStorageBucketID = '69ab3ce10039132e52d1';
+class Environment {
+  static String get appwriteProjectId =>
+      dotenv.env['APPWRITE_PROJECT_ID']!;
+
+  static String get appwritePublicEndpoint =>
+      dotenv.env['APPWRITE_PUBLIC_ENDPOINT']!;
+
+  static String get appwriteDatabaseID =>
+      dotenv.env['APPWRITE_DATABASE_ID']!;
+
+  static String get appwriteUserCollectionId =>
+      dotenv.env['APPWRITE_USER_COLLECTION_ID']!;
+
+  static String get appwriteTweetcollectionId =>
+      dotenv.env['APPWRITE_TWEET_COLLECTION_ID']!;
+
+  static String get appwriteNotificationcollectionId =>
+      dotenv.env['APPWRITE_NOTIFICATION_COLLECTION_ID']!;
+
+  static String get appwriteStorageBucketID =>
+      dotenv.env['APPWRITE_STORAGE_BUCKET_ID']!;
 
   static String imageurl(String image) {
     return '$appwritePublicEndpoint/storage/buckets/$appwriteStorageBucketID/files/$image/view?project=$appwriteProjectId&mode=admin';

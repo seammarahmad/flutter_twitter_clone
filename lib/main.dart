@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_twitter_clone/Views/tweet/view/create_tweet_view.dart';
 import 'package:flutter_twitter_clone/theme/app_theme.dart';
@@ -10,7 +11,8 @@ import 'Views/LoginViews/controller/auth_controller.dart';
 import 'core/utils.dart';
 
 
-void main() {
+void main() async{
+  await dotenv.load(fileName: ".env");
   runApp(ProviderScope(child: const MyApp()));
 }
 
