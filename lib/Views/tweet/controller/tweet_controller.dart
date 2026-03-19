@@ -76,8 +76,8 @@ class TweetController extends StateNotifier<bool> {
        _ref = ref,
        super(false);
 
-  Future<List<Tweet>> getTweets() async {
-    final tweeetlist = await _tweetAPI.getTweets();
+  Future<List<Tweet>> getTweets({String? lastId}) async {
+    final tweeetlist = await _tweetAPI.getTweets(lastId: lastId);
     return tweeetlist.map((tweet) => Tweet.fromMap(tweet.data)).toList();
   }
 

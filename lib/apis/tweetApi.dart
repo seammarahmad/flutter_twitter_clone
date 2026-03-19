@@ -16,7 +16,7 @@ final TweetApiProvider = Provider((ref) {
 abstract class TweetapiInterface {
   Future<Either<String, Document>> shareTweet(Tweet tweet);
 
-  Future<List<Document>> getTweets();
+  Future<List<Document>> getTweets({String? lastId});
 
   Stream<RealtimeMessage> getLatestTweet();
 
@@ -30,7 +30,7 @@ abstract class TweetapiInterface {
   Future<List<Document>> searchTweets(String query);
   Future<Document> getTweetById(String id);
   Future<Either<String, Document>> updateCommentIds(Tweet tweet);
-  Future<List<Document>> getUserTweets(String uid);
+  Future<List<Document>> getUserTweets(String uid, {String? lastId});
 }
 
 class Tweetapi implements TweetapiInterface {
@@ -59,11 +59,15 @@ class Tweetapi implements TweetapiInterface {
   }
 
   @override
-  Future<List<Document>> getTweets() async {
+  Future<List<Document>> getTweets({String? lastId}) async {
     final abc = await _db.listDocuments(
       databaseId: Environment.appwriteDatabaseID,
       collectionId: Environment.appwriteTweetcollectionId,
-      queries: [Query.orderDesc('tweetedAt')],
+      queries: [
+        Query.orderDesc('tweetedAt'),
+        Query.limit(25),
+        if (lastId != null) Query.cursorAfter(lastId),
+      ],
     );
     return abc.documents;
   }
@@ -121,13 +125,15 @@ class Tweetapi implements TweetapiInterface {
   }
 
   @override
-  Future<List<Document>> getUserTweets(String uid) async {
+  Future<List<Document>> getUserTweets(String uid, {String? lastId}) async {
     final documents = await _db.listDocuments(
       databaseId: Environment.appwriteDatabaseID,
       collectionId: Environment.appwriteTweetcollectionId,
       queries: [
         Query.equal('uid', uid),
         Query.orderDesc('tweetedAt'),
+        Query.limit(25),
+        if (lastId != null) Query.cursorAfter(lastId),
       ],
     );
     return documents.documents;
@@ -138,7 +144,10 @@ class Tweetapi implements TweetapiInterface {
     final documents = await _db.listDocuments(
       databaseId: Environment.appwriteDatabaseID,
       collectionId: Environment.appwriteTweetcollectionId,
-      queries: [Query.equal('hashtags', hashtag)],
+      queries: [
+        Query.equal('hashtags', hashtag),
+        Query.limit(25),
+      ],
     );
     return documents.documents;
   }
@@ -151,7 +160,7 @@ class Tweetapi implements TweetapiInterface {
       queries: [
         Query.search('text', query),
         Query.orderDesc('tweetedAt'),
-        Query.limit(30),
+        Query.limit(25),
       ],
     );
     return documents.documents;

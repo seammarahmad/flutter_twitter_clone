@@ -21,24 +21,43 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   final emailController=TextEditingController();
   final passwordController=TextEditingController();
+  final nameController=TextEditingController();
+  final confirmPasswordController=TextEditingController();
 
   String? email;
   String? password;
+  String? name;
+  String? confirmPassword;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   void onSignUp(){
-    if(validateForm(email!, password!)){
-     ref.read(authControllerprovider.notifier).signUp(email: emailController.text, password: passwordController.text, context: context);
+    if(validateForm()){
+     ref.read(authControllerprovider.notifier).signUp(
+       email: emailController.text, 
+       password: passwordController.text, 
+       name: nameController.text,
+       context: context
+      );
     }
   }
 
-  bool validateForm(String email, String password) {
+  bool validateForm() {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (email.isEmpty || !emailRegex.hasMatch(email)) {
-      print("Please enter a valid email address");
+    if (nameController.text.isEmpty) {
+      showSnackBar(context, "Please enter your name");
       return false;
     }
-    if (password.isEmpty || password.length < 6) {
-      print("Password must be at least 6 characters long");
+    if (emailController.text.isEmpty || !emailRegex.hasMatch(emailController.text)) {
+      showSnackBar(context, "Please enter a valid email address");
+      return false;
+    }
+    if (passwordController.text.isEmpty || passwordController.text.length < 6) {
+      showSnackBar(context, "Password must be at least 6 characters long");
+      return false;
+    }
+    if (passwordController.text != confirmPasswordController.text) {
+      showSnackBar(context, "Passwords do not match");
       return false;
     }
     return true;
@@ -49,6 +68,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
+    nameController.dispose();
+    confirmPasswordController.dispose();
   }
 
   @override
@@ -60,79 +81,127 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       backgroundColor: Pallete.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Flexible(
-              child: Hero(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              const SizedBox(height: 50),
+              Hero(
                 tag: 'logo',
                 child: SizedBox(
-                  height: 200.0,
+                  height: 150.0,
                   child: SvgPicture.asset('assets/svgs/twitter_logo.svg',
                     color: Pallete.blueColor,),
                 ),
               ),
-            ),
-            const SizedBox(height: 20.0),
-            Text('Sign Up',
-                style: kSendButtonTextStyle.copyWith(
-                    fontSize: 30.0, color: Pallete.blueColor),
-                textAlign: TextAlign.center),
-            const SizedBox(height: 10.0),
-            TextField(
-              controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                textAlign: TextAlign.center,
-                onChanged: (value) {
-                  email = value;
-                },
-                style: kTextStyle,
-                decoration: kTextFieldDesign(
-                    borderColor: Pallete.blueColor,
-                    hintTexts: 'Enter Your Email')),
-            const SizedBox(height: 8.0),
-            TextField(
-              controller: passwordController,
-                obscureText: true,
-                textAlign: TextAlign.center,
-                onChanged: (value) {
-                  password = value;
-                },
-                decoration: kTextFieldDesign(
-                    borderColor: Pallete.blueColor,
-                    hintTexts: 'Enter Your Password'),
-                style: kTextStyle),
-            const SizedBox(height: 24.0),
-            RoundButton(
-              title: 'Sign Up',
-              colour: Pallete.blueColor,
-              onPress: () async {
-                onSignUp();
-              }, Size: 200.0,
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text("Already Have Account",
-                    style: TextStyle(
-                        fontSize: 10.0,
-                        color: Pallete.whiteColor)),
-                TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, LoginScreen.id);
-                    },
-                    child: const Text("Login",
-                        style: TextStyle(
-                            fontSize: 15.0,
-                            color: Pallete.blueColor))),
-              ],
-            )
-          ],
+              const SizedBox(height: 20.0),
+              Text('Sign Up',
+                  style: kSendButtonTextStyle.copyWith(
+                      fontSize: 30.0, color: Pallete.blueColor),
+                  textAlign: TextAlign.center),
+              const SizedBox(height: 10.0),
+              TextField(
+                controller: nameController,
+                  textAlign: TextAlign.center,
+                  onChanged: (value) {
+                    name = value;
+                  },
+                  style: kTextStyle,
+                  decoration: kTextFieldDesign(
+                      borderColor: Pallete.blueColor,
+                      hintTexts: 'Enter Your Name')),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textAlign: TextAlign.center,
+                  onChanged: (value) {
+                    email = value;
+                  },
+                  style: kTextStyle,
+                  decoration: kTextFieldDesign(
+                      borderColor: Pallete.blueColor,
+                      hintTexts: 'Enter Your Email')),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: passwordController,
+                  obscureText: !_isPasswordVisible,
+                  textAlign: TextAlign.center,
+                  onChanged: (value) {
+                    password = value;
+                  },
+                  decoration: kTextFieldDesign(
+                      borderColor: Pallete.blueColor,
+                      hintTexts: 'Enter Your Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Pallete.blueColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                  ),
+                  style: kTextStyle),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: confirmPasswordController,
+                  obscureText: !_isConfirmPasswordVisible,
+                  textAlign: TextAlign.center,
+                  onChanged: (value) {
+                    confirmPassword = value;
+                  },
+                  decoration: kTextFieldDesign(
+                      borderColor: Pallete.blueColor,
+                      hintTexts: 'Confirm Your Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Pallete.blueColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                          });
+                        },
+                      ),
+                  ),
+                  style: kTextStyle),
+              const SizedBox(height: 24.0),
+              RoundButton(
+                title: 'Sign Up',
+                colour: Pallete.blueColor,
+                onPress: () async {
+                  onSignUp();
+                }, Size: 200.0,
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text("Already Have Account",
+                      style: TextStyle(
+                          fontSize: 10.0,
+                          color: Pallete.whiteColor)),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, LoginScreen.id);
+                      },
+                      child: const Text("Login",
+                          style: TextStyle(
+                              fontSize: 15.0,
+                              color: Pallete.blueColor))),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

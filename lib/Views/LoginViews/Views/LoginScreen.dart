@@ -18,8 +18,15 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  String? email;
+  String? password;
+  bool _isPasswordVisible = false;
+
   void Login() {
-    if (validateForm(email!, password!)) {
+    if (validateForm(emailController.text, passwordController.text)) {
       ref
           .read(authControllerprovider.notifier)
           .Login(
@@ -30,20 +37,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  String? email;
-  String? password;
-
   bool validateForm(String email, String password) {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (email.isEmpty || !emailRegex.hasMatch(email)) {
-      print("Please enter a valid email address");
+      showSnackBar(context, "Please enter a valid email address");
       return false;
     }
     if (password.isEmpty || password.length < 6) {
-      print("Password must be at least 6 characters long");
+      showSnackBar(context, "Password must be at least 6 characters long");
       return false;
     }
     return true;
@@ -61,7 +62,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = ref.watch(authControllerprovider);
 
     return isLoading
-        ? LoadingPage()
+        ? const LoadingPage()
         : Scaffold(
             backgroundColor: Pallete.backgroundColor,
             body: Padding(
@@ -108,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 8.0),
                   TextField(
                     controller: passwordController,
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
                     textAlign: TextAlign.center,
                     onChanged: (value) {
                       password = value;
@@ -116,6 +117,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     decoration: kTextFieldDesign(
                       borderColor: Pallete.blueColor,
                       hintTexts: 'Enter Your Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Pallete.blueColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
                     style: kTextStyle,
                   ),

@@ -88,6 +88,7 @@ class AuthController extends Notifier<bool> {
   Future<void> signUp({
     required String email,
     required String password,
+    required String name,
     required BuildContext context,
   }) async {
     try {
@@ -96,7 +97,7 @@ class AuthController extends Notifier<bool> {
       res.fold((l) => showSnackBar(context, l), (r) async {
         UserModel userModel = UserModel(
           email: email,
-          name: getNamefromtheEmail(email),
+          name: name,
           followers: [],
           following: [],
           profilePic: '',

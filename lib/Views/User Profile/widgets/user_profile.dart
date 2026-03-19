@@ -12,6 +12,7 @@ import '../../../theme/pallete.dart';
 import '../../tweet/controller/tweet_controller.dart';
 import '../../tweet/widget/tweet_card.dart';
 import '../views/edit_profile_view.dart';
+import '../views/follow_list_view.dart';
 
 class UserProfile extends ConsumerWidget {
   final UserModel user;
@@ -258,9 +259,33 @@ class UserProfile extends ConsumerWidget {
                         // Stats row
                         Row(
                           children: [
-                            _buildStat(user.following.length, 'Following'),
+                            _buildStat(
+                              user.following.length,
+                              'Following',
+                              () {
+                                Navigator.push(
+                                  context,
+                                  FollowListView.route(
+                                    'Following',
+                                    user.following,
+                                  ),
+                                );
+                              },
+                            ),
                             const SizedBox(width: 20),
-                            _buildStat(user.followers.length, 'Followers'),
+                            _buildStat(
+                              user.followers.length,
+                              'Followers',
+                              () {
+                                Navigator.push(
+                                  context,
+                                  FollowListView.route(
+                                    'Followers',
+                                    user.followers,
+                                  ),
+                                );
+                              },
+                            ),
                           ],
                         ),
 
@@ -344,26 +369,29 @@ class UserProfile extends ConsumerWidget {
     );
   }
 
-  Widget _buildStat(int count, String label) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: '$count',
-            style: const TextStyle(
-              color: Pallete.whiteColor,
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
+  Widget _buildStat(int count, String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '$count',
+              style: const TextStyle(
+                color: Pallete.whiteColor,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
-          TextSpan(
-            text: ' $label',
-            style: const TextStyle(
-              color: Pallete.greyColor,
-              fontSize: 14,
+            TextSpan(
+              text: ' $label',
+              style: const TextStyle(
+                color: Pallete.greyColor,
+                fontSize: 14,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

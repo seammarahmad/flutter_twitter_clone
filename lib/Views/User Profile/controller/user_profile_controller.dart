@@ -36,6 +36,12 @@ final getLatestUserProfileDataProvider = StreamProvider((ref) {
   return ref.watch(userApiProvider).getLatestUserProfileData();
 });
 
+final getUsersListProvider = FutureProvider.family((ref, List<String> uids) async {
+  final userAPI = ref.watch(userApiProvider);
+  final users = await userAPI.getUsersData(uids);
+  return users.map((e) => UserModel.fromMap(e.data)).toList();
+});
+
 class UserProfileController extends StateNotifier<bool> {
   final Tweetapi _tweetAPI;
   final StorageAPI _storageAPI;
@@ -111,16 +117,16 @@ class UserProfileController extends StateNotifier<bool> {
     res.fold((l) => showSnackBar(context, l.message), (r) async {
       final res2 = await _userAPI.addToFollowing(currentUser);
       res2.fold((l) => showSnackBar(context, l.message), (onRight) {
-        {
-          if (!isFollowing) {
-            _notificationController.createNotification(
-              text: '${currentUser.name} started following you',
-              postId: '',
-              notificationType: NotificationType.follow,
-              uid: user.uid,
-              fromUserId: currentUser.uid,
-            );
-          }
+        _ref.invalidate(userDetailsProvider(user.uid));
+        _ref.invalidate(currentUserdetailsProvider);
+        if (!isFollowing) {
+          _notificationController.createNotification(
+            text: '${currentUser.name} started following you',
+            postId: '',
+            notificationType: NotificationType.follow,
+            uid: user.uid,
+            fromUserId: currentUser.uid,
+          );
         }
       });
     });

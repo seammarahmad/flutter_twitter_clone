@@ -14,7 +14,7 @@ const kTextStyle = TextStyle(
     fontSize: 15.0
 );
 
-InputDecoration kTextFieldDesign({required Color borderColor, required String hintTexts}) {
+InputDecoration kTextFieldDesign({required Color borderColor, required String hintTexts, Widget? suffixIcon}) {
   return InputDecoration(
     hintText: hintTexts,
     hintStyle: const TextStyle(
@@ -22,9 +22,10 @@ InputDecoration kTextFieldDesign({required Color borderColor, required String hi
         fontFamily: 'Poppins',
         fontSize: 10.0
     ),
+    suffixIcon: suffixIcon,
     contentPadding:
     const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-    border: OutlineInputBorder(
+    border: const OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(32.0)),
     ),
     enabledBorder: OutlineInputBorder(

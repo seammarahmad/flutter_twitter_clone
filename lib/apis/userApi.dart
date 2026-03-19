@@ -27,6 +27,8 @@ abstract class AUserApi {
   Future<Either<Failure, void>> followUser(UserModel user);
 
   Stream<RealtimeMessage> getLatestUserProfileData();
+
+  Future<List<Document>> getUsersData(List<String> uids);
 }
 
 class UserApi extends AUserApi {
@@ -131,5 +133,19 @@ class UserApi extends AUserApi {
     } catch (e, st) {
       return left(Failure(e.toString(), st));
     }
+  }
+
+  @override
+  Future<List<Document>> getUsersData(List<String> uids) async {
+    if (uids.isEmpty) return [];
+    final documents = await _db.listDocuments(
+      databaseId: Environment.appwriteDatabaseID,
+      collectionId: Environment.appwriteUserCollectionId,
+      queries: [
+        Query.equal('\$id', uids),
+        Query.limit(uids.length > 100 ? uids.length : 100),
+      ],
+    );
+    return documents.documents;
   }
 }
